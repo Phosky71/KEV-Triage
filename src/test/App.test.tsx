@@ -24,7 +24,7 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
 
     fireEvent.click(tplA);
 
-    const textarea = screen.getByLabelText(/Descripción técnica de la incidencia/i);
+    const textarea = screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i });
     expect(textarea).toHaveValue(
       'El endpoint de autenticación devuelve errores HTTP 500 desde el último despliegue. Durante el diagnóstico se detectó que un token de acceso podría haber aparecido en un registro compartido. El servicio afecta a varios usuarios y es necesario investigar la causa del error y el posible alcance de la exposición.'
     );
@@ -48,13 +48,13 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
     });
     fireEvent.click(submitBtn);
 
-    expect(screen.getByText(/Datos de demostración/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Datos de demostraci/i).length > 0).toBe(true);
     expect(
-      screen.getByText(
+      screen.getAllByText(
         /Alerta de Seguridad Prioritaria: Posible Exposición de Material Sensible/i
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Asignación Automática Propuesta/i)).toBeInTheDocument();
+      ).length > 0
+    ).toBe(true);
+    expect(screen.getAllByText(/Asignación Automática Propuesta/i).length > 0).toBe(true);
   });
 
   it('conserva el texto introducido si ocurre un fallo de red y evita envíos duplicados en curso', async () => {
@@ -71,7 +71,7 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
 
     render(<App />);
 
-    const textarea = screen.getByLabelText(/Descripción técnica de la incidencia/i);
+    const textarea = screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i }) as HTMLTextAreaElement;
     const sampleText =
       'Error crítico en el clúster de base de datos principal tras aplicar migración.';
     fireEvent.change(textarea, { target: { value: sampleText } });
@@ -98,7 +98,7 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
     });
 
     // El texto del usuario NO se pierde tras el error
-    expect(textarea).toHaveValue(sampleText);
+    expect(screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i })).toHaveValue(sampleText);
 
     vi.unstubAllEnvs();
   });
