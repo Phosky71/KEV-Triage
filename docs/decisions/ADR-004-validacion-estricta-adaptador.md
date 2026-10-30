@@ -25,6 +25,32 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
 - Razón: ADR-002 exige que la alerta de seguridad nunca se oculte.
 - Comprobación en estado actual: El adaptador construye `KevNormalizedResult` completo; un fallo en parsing de `department` puede impedir construir el resultado completo. Esto **requiere cambio estructural** en el adaptador para evaluar preguntas por separado (parsear `securityLeak` independientemente) y devolver alerta aunque `department`/`severity` sean ambiguos o inválidos. **Decisión pendiente**: no implementar en KT-005; documentar y tratar en fase posterior.
 
+## Cláusula: Origen de P(sí) para `is_security_leak`
+
+**Regla de precedencia:**
+
+1. **Fuentes explícitas de P(sí)** (únicamente estas claves se tratan como `P(sí)` directa, **sin invertir**):
+   - `affirmative_probability`
+   - `yes_probability`
+   - `true_probability`
+   - `p_yes`
+   - `p_true`
+   - `score` (confirmado en `docs/api.md` como fuente listada; se mantiene como fuente explícita de P(sí))
+   - dentro de `probabilities`/`distribution`/`probs`: `yes`, `true`, `affirmative`, `'1'` (cuando provengan de esas claves explícitas)
+
+2. **Detección de fuentes múltiples**: Si se encuentran **dos o más fuentes explícitas distintas** que apunten a `P(sí)` con **valores numéricos diferentes** (comparación con tolerancia `1e-9`) → **`INVALID_SCHEMA`** (fuentes discrepantes). Si apuntan al **mismo valor** (dentro de ε) → se acepta ese valor. **Si hay combinación de fuente explícita + campo genérico con valores discrepantes, la fuente explícita tiene precedencia pero la discrepancia entre fuentes explícitas debe detectarse; si una fuente es genérica y otra explícita y dan valores que no son equivalentes según la regla aplicable, se considera discrepancia entre fuentes → `INVALID_SCHEMA`.**
+
+3. **Campo genérico + `answer` (EN ESPERA - no cambiar comportamiento actual aún):** Actualmente el adaptador interpreta `probability`/`confidence` genérico junto a `answer` como **confianza en la respuesta** (`answer true` → `P(sí)=p`, `answer false` → `P(sí)=1-p`). **Decisión pendiente** sobre si es P(sí) o confianza. **No se modifica en KT-007.** Se documentará con evidencia del repo cuando se decida.
+
+4. **Valores de `answer`**: Solo se aceptan `true`, `false`, `'yes'`, `'no'`, `'true'`, `'false'` (case-insensitive cuando aplica). Valores no reconocidos como `"maybe"`, `""`, `"Yes"` (con mayúsculas inesperadas) → **`INVALID_SCHEMA`**.
+
+5. **Consistencia `answer` vs `P(sí)`** (evaluada sobre **P(sí) canónica resultante**):
+   - Si `answer === true` y `P(sí) < 0.5` → contradicción → `INVALID_SCHEMA`
+   - Si `answer === false` y `P(sí) > 0.5` → contradicción → `INVALID_SCHEMA`
+   - Si `P(sí) === 0.5` → **no** es contradictorio por sí solo
+
+**Mensaje de error fijo:** `"Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga."`
+
 ## Decisiones
 
 ### 1) Empate en `department`
@@ -45,10 +71,11 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
 - **Rango individual:** Las probabilidades deben estar en `[0, 1]`. Valores fuera de `[0,1]` → **`INVALID_SCHEMA`**.
 
 ### 3) Campos contradictorios
-- **Consistencia `answer` vs `probability` (noul `is_security_leak`):**
-  - Si `answer === true` (afirmativo) y `probability < 0.5` → **contradicción** → **`INVALID_SCHEMA`**
-  - Si `answer === false` (negativo) y `probability > 0.5` → **contradicción** → **`INVALID_SCHEMA`**
-  - Si `probability === 0.5` → **no** es contradicción por sí solo (caso ambiguo pero no contradictorio). Se aplica regla de seguridad (sección 4).
+- **Consistencia `answer` vs `P(sí)` (noul `is_security_leak`):**
+  - Si `answer === true` (afirmativo) y `P(sí) < 0.5` → **contradicción** → **`INVALID_SCHEMA`**
+  - Si `answer === false` (negativo) y `P(sí) > 0.5` → **contradicción** → **`INVALID_SCHEMA`**
+  - Si `P(sí) === 0.5` → **no** es contradictorio por sí solo (caso ambiguo pero no contradictorio). Se aplica regla de seguridad (sección 4).
+  - Evaluación siempre sobre **P(sí) canónica resultante** (tras aplicar precedencia y reglas).
 - **Consistencia `level` / `index` / `score` (severidad):**
   - Índice ordinal esperado: `0→low`, `1→moderate`, `2→high`, `3→critical`, `4→emergency`
   - Score numérico esperado: `1→low`, `2→moderate`, `3→high`, `4→critical`, `5→emergency`
@@ -73,9 +100,18 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
 | Suma fuera de tolerancia | Distribución múltiple con suma `0.98` | `INVALID_SCHEMA` (no normalizar) |
 | Suma fuera de tolerancia | Distribución múltiple con suma `0.97` | `INVALID_SCHEMA` |
 | Suma fuera de tolerancia | Distribución múltiple con suma `1.03` | `INVALID_SCHEMA` |
-| answer/probability contradictorios | `answer: true` con `probability: 0.4` (<0.5) | `INVALID_SCHEMA` |
-| answer/probability contradictorios | `answer: false` con `probability: 0.6` (>0.5) | `INVALID_SCHEMA` |
-| p=0.5 no contradictorio | `answer: true` con `probability: 0.5` o `answer: false` con `probability: 0.5` | No contradictorio; si no hay prob afirmativa inequívoca → `INVALID_SCHEMA` por regla de seguridad |
+| answer/probability contradictorios (genérico, EN ESPERA) | `answer: true` con `probability: 0.4` | **`INVALID_SCHEMA`** (confianza < 0.5 incoherente con `answer: true`) |
+| answer/probability contradictorios (genérico, EN ESPERA) | `answer: false` con `probability: 0.4` | **`INVALID_SCHEMA`** |
+| answer/probability válidos (genérico, EN ESPERA) | `answer: false` con `probability: 0.6` | **Válido**, `P(sí)=0.4` (sin alerta) |
+| answer/probability contradictorios (genérico, EN ESPERA) | `answer: false` con `probability: 0.4` | **`INVALID_SCHEMA`** |
+| p=0.5 válido (genérico, EN ESPERA) | `answer: true` con `probability: 0.5` o `answer: false` con `probability: 0.5` | **Válido**, `P(sí)=0.5` (no contradictorio) |
+| Fuentes explícitas + genérico discrepantes | `p_yes: 0.9`, `probability: 0.1` (con o sin answer) | **`INVALID_SCHEMA`** (fuentes discrepantes; precedencia explícita pero discrepancia detectada) |
+| Fuentes explícitas discrepantes | `p_yes: 0.9`, `probabilities.yes: 0.2` | **`INVALID_SCHEMA`** |
+| Explícita contradice answer | `answer: false`, `p_yes: 0.9` | **`INVALID_SCHEMA`** (P(sí)=0.9 > 0.5 con answer false) |
+| Explícita contradice answer | `answer: true`, `p_yes: 0.4` | **`INVALID_SCHEMA`** (P(sí)=0.4 < 0.5 con answer true) |
+| Límites válidos | `affirmative_probability: 0`, `1`, `0.70` exacto | Válidos. `0.70` exacto → **sin alerta** (> 0.70) |
+| Valores no numéricos | `NaN`, `"0.9"`, `null` | **`INVALID_SCHEMA`** |
+| answer no reconocido | `answer: "maybe"`, `""`, `"Yes"` (no reconocido) | **`INVALID_SCHEMA`** |
 | Probabilidad ausente | Sin probabilidad usable | `INVALID_SCHEMA` (nunca inferir "sin alerta") |
 | Probabilidad fuera de [0,1] | `probability: 1.5` o `-0.1` | `INVALID_SCHEMA` |
 | Severidad consistente | `index: 0` + `score: 1` | Válido (low) |

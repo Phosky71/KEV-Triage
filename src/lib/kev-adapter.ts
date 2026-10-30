@@ -234,29 +234,97 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
   };
 }
 
+const INVALID_SCHEMA_MSG_SECURITY =
+  'Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga.';
+
+function isRecognizedAnswerValue(val: unknown): val is boolean | string {
+  if (typeof val === 'boolean') return true;
+  if (typeof val === 'string') {
+    const v = val.toLowerCase();
+    return v === 'yes' || v === 'no' || v === 'true' || v === 'false';
+  }
+  return false;
+}
+
+function getAnswerBoolean(val: unknown): boolean | undefined {
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'string') {
+    const v = val.toLowerCase();
+    if (v === 'yes' || v === 'true') return true;
+    if (v === 'no' || v === 'false') return false;
+  }
+  return undefined;
+}
+
 /**
  * Adapta y valida la pregunta C: `is_security_leak` (tipo `noul`).
  * Extrae estrictamente la probabilidad afirmativa según el contrato de respuestas noul.
  */
 function parseSecurityLeakNode(node: Record<string, unknown>): SecurityLeakAssessment {
-  let affirmativeProb: unknown =
-    node.affirmative_probability ??
-    node.yes_probability ??
-    node.true_probability ??
-    node.p_yes ??
-    node.p_true ??
-    node.score;
-
-  const rawProbs = node.probabilities ?? node.distribution ?? node.probs;
-  if (affirmativeProb === undefined && isRecord(rawProbs)) {
-    affirmativeProb =
-      rawProbs.yes ??
-      rawProbs.true ??
-      rawProbs.affirmative ??
-      rawProbs['1'];
+  // Validar answer si está presente
+  const rawAnsCandidate = node.answer ?? node.value ?? node.choice;
+  if (rawAnsCandidate !== undefined && !isRecognizedAnswerValue(rawAnsCandidate)) {
+    throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
   }
 
-  // Si el nodo devuelve `answer: true/false` o `"yes"/"no"` junto con `confidence`/`probability`:
+  const explicitKeys = [
+    'affirmative_probability',
+    'yes_probability',
+    'true_probability',
+    'p_yes',
+    'p_true',
+    'score',
+  ] as const;
+
+  const explicitSources: Array<{ key: string; value: unknown }> = [];
+  for (const k of explicitKeys) {
+    if (Object.prototype.hasOwnProperty.call(node, k)) {
+      explicitSources.push({ key: k, value: (node as Record<string, unknown>)[k] });
+    }
+  }
+
+  const rawProbs = node.probabilities ?? node.distribution ?? node.probs;
+  if (isRecord(rawProbs)) {
+    for (const k of ['yes', 'true', 'affirmative', '1']) {
+      if (Object.prototype.hasOwnProperty.call(rawProbs, k)) {
+        explicitSources.push({ key: `probabilities.${k}`, value: rawProbs[k] });
+      }
+    }
+  }
+
+  // Detectar fuentes numéricas no válidas en fuentes explícitas
+  for (const src of explicitSources) {
+    const v = src.value;
+    if (typeof v === 'string' || v === null || (typeof v === 'number' && Number.isNaN(v))) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    if (typeof v === 'number') {
+      if (v < 0 || v > 1) {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      }
+    } else {
+      // Si no es number válido
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+  }
+
+  // Detectar discrepancias entre fuentes explícitas
+  if (explicitSources.length >= 2) {
+    const first = explicitSources[0]!.value as number;
+    for (let i = 1; i < explicitSources.length; i++) {
+      const v = explicitSources[i]!.value as number;
+      if (Math.abs(v - first) > 1e-9) {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      }
+    }
+  }
+
+  let affirmativeProb: number | undefined;
+  if (explicitSources.length >= 1) {
+    affirmativeProb = explicitSources[0]!.value as number;
+  }
+
+  // Campo genérico + answer (comportamiento actual NO CAMBIADO por ahora)
   if (affirmativeProb === undefined) {
     const directProb = node.probability ?? node.confidence;
     const rawAns = node.answer ?? node.value ?? node.choice;
@@ -268,13 +336,38 @@ function parseSecurityLeakNode(node: Record<string, unknown>): SecurityLeakAsses
         affirmativeProb = Number((1 - directProb).toFixed(6));
       }
     }
+  } else {
+    // Hay fuente explícita - revisar si hay campo genérico discrepante
+    const directProb = node.probability ?? node.confidence;
+    if (isValidProbability(directProb)) {
+      const rawAns = node.answer ?? node.value ?? node.choice;
+      let genDerived: number | undefined;
+      if (rawAns === true || rawAns === 'yes' || rawAns === 'true' || rawAns === undefined) {
+        genDerived = directProb;
+      } else if (rawAns === false || rawAns === 'no' || rawAns === 'false') {
+        genDerived = Number((1 - directProb).toFixed(6));
+      }
+      if (genDerived !== undefined && Math.abs(genDerived - affirmativeProb) > 1e-9) {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      }
+    }
   }
 
-  if (!isValidProbability(affirmativeProb)) {
+  if (affirmativeProb === undefined || !isValidProbability(affirmativeProb)) {
     throw new KevValidationError(
-      'El campo "is_security_leak" (tipo noul) no contiene una probabilidad afirmativa válida en el rango [0, 1].',
+      INVALID_SCHEMA_MSG_SECURITY,
       `Nodo recibido: ${JSON.stringify(node)}`
     );
+  }
+
+  const ansBool = getAnswerBoolean(rawAnsCandidate);
+  if (ansBool !== undefined) {
+    if (ansBool === true && affirmativeProb < 0.5) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    if (ansBool === false && affirmativeProb > 0.5) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
   }
 
   const rawAnswer =

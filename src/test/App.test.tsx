@@ -102,4 +102,41 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
 
     vi.unstubAllEnvs();
   });
+
+  it('muestra aviso de revisión manual para INVALID_SCHEMA de is_security_leak y nunca "sin alerta"', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          model: 'kev-test',
+          answers: {
+            department: { choice: 'backend', confidence: 0.9 },
+            severity: { level: 'high' },
+            is_security_leak: { affirmative_probability: NaN },
+          },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    );
+
+    vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i }), {
+      target: { value: 'Test incidencia' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga./i)
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/sin alerta/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sin alerta/i)).not.toBeInTheDocument();
+
+    fetchSpy.mockRestore();
+    vi.unstubAllEnvs();
+  });
 });
