@@ -35,7 +35,7 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
    - `true_probability`
    - `p_yes`
    - `p_true`
-   - `score` (confirmado en `docs/api.md` como fuente listada; se mantiene como fuente explícita de P(sí))
+   - `score` (**solo para `is_security_leak`**; se mantiene como fuente explícita de P(sí), debe estar en el rango `[0,1]`)
    - dentro de `probabilities`/`distribution`/`probs`: `yes`, `true`, `affirmative`, `'1'` (cuando provengan de esas claves explícitas)
 
 2. **Detección de fuentes múltiples**: Si se encuentran **dos o más fuentes explícitas distintas** que apunten a `P(sí)` con **valores numéricos diferentes** (comparación con tolerancia `1e-9`) → **`INVALID_SCHEMA`** (fuentes discrepantes). Si apuntan al **mismo valor** (dentro de ε) → se acepta ese valor. **Si hay combinación de fuente explícita + campo genérico con valores discrepantes, la fuente explícita tiene precedencia pero la discrepancia entre fuentes explícitas debe detectarse; si una fuente es genérica y otra explícita y dan valores que no son equivalentes según la regla aplicable, se considera discrepancia entre fuentes → `INVALID_SCHEMA`.**
