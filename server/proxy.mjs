@@ -14,24 +14,9 @@ function normalizeAllowedOrigins(value) {
 function isOriginAllowed(origin, allowedOrigins) {
   if (!origin) return true; // petición sin Origin permitida
   if (!allowedOrigins || allowedOrigins.length === 0) {
-    // Si no hay lista configurada, mantener comportamiento compatible pero estricto según requisito posterior
     return true;
   }
   return allowedOrigins.includes(origin);
-}
-
-function setCorsHeaders(res, origin, allowedOrigins) {
-  if (origin && isOriginAllowed(origin, allowedOrigins) && allowedOrigins && allowedOrigins.length > 0) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    return;
-  }
-  if (origin && isOriginAllowed(origin, allowedOrigins) && (!allowedOrigins || allowedOrigins.length === 0)) {
-    // compatibilidad - se ajustará en KT-011
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    return;
-  }
-  // Si hay lista y origen no permitido, no reflejar ACAO
 }
 
 export function createProxyServer(config = {}) {
@@ -50,6 +35,7 @@ export function createProxyServer(config = {}) {
     // CORS preflight
     if (req.method === 'OPTIONS') {
       if (origin && allowedOrigins.length > 0 && !isOriginAllowed(origin, allowedOrigins)) {
+        res.setHeader('Vary', 'Origin');
         res.writeHead(403);
         res.end();
         return;
@@ -57,8 +43,13 @@ export function createProxyServer(config = {}) {
       if (origin && allowedOrigins.length > 0 && isOriginAllowed(origin, allowedOrigins)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
+      } else if (origin && allowedOrigins.length === 0 && origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
       } else if (origin && allowedOrigins.length === 0) {
         res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      if (origin) {
+        res.setHeader('Vary', 'Origin');
       }
       res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
@@ -70,6 +61,7 @@ export function createProxyServer(config = {}) {
 
     // CORS para peticiones normales
     if (origin && allowedOrigins.length > 0 && !isOriginAllowed(origin, allowedOrigins)) {
+      res.setHeader('Vary', 'Origin');
       res.writeHead(403, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Origen no permitido.' }));
       return;
@@ -79,6 +71,11 @@ export function createProxyServer(config = {}) {
       res.setHeader('Vary', 'Origin');
     } else if (origin && allowedOrigins.length === 0) {
       res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    if (origin && allowedOrigins.length > 0) {
+      res.setHeader('Vary', 'Origin');
+    } else if (origin) {
+      res.setHeader('Vary', 'Origin');
     }
 
     const url = req.url || '';
@@ -151,6 +148,11 @@ export function createProxyServer(config = {}) {
       if (origin && allowedOrigins.length > 0 && isOriginAllowed(origin, allowedOrigins)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
+      } else if (origin && allowedOrigins.length === 0) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      if (origin) {
+        res.setHeader('Vary', 'Origin');
       }
       res.writeHead(upstreamResponse.status, {
         'Content-Type': 'application/json; charset=utf-8',
@@ -160,6 +162,11 @@ export function createProxyServer(config = {}) {
       // Nunca registramos ni devolvemos KEV_API_KEY ni el contenido sensible de la incidencia
       if (origin && allowedOrigins.length > 0 && isOriginAllowed(origin, allowedOrigins)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+      } else if (origin && allowedOrigins.length === 0) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      if (origin) {
         res.setHeader('Vary', 'Origin');
       }
       res.writeHead(502, { 'Content-Type': 'application/json' });

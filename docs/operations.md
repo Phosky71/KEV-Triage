@@ -33,7 +33,7 @@ Los archivos estáticos se generan en `dist/`. El proxy (`server/proxy.mjs`) deb
 | `PORT` | No | `8787` | Puerto del proxy |
 | `KEV_UPSTREAM_URL` | Sí | - | URL base o completa del upstream Kev |
 | `KEV_API_KEY` | No | - | API key, se añade como `Bearer` si existe |
-| `ALLOWED_ORIGIN` | No | `http://localhost:5173` | Origen permitido para CORS |
+| `ALLOWED_ORIGIN` | No | `http://localhost:5173` | Lista separada por comas de orígenes permitidos para CORS. Orígenes no permitidos reciben 403 sin ACAO. Peticiones sin Origin permitidas. |
 
 ## Despliegue
 

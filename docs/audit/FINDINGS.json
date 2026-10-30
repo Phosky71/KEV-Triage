@@ -124,11 +124,11 @@
     "ID": "KT-011",
     "Severidad": "Alta",
     "Área": "Proxy",
-    "ArchivoLínea": "server/proxy.mjs:15-23",
-    "Descripción": "CORS sin validación de origen, sin Vary: Origin",
-    "Evidencia": "Revisión de código",
+    "ArchivoLínea": "server/proxy.mjs:15-23,50-90",
+    "Descripción": "CORS: ALLOWED_ORIGIN sin lista CSV; ACAO no se refleja con origen no permitido (falta 403 en POST/OPTIONS); Vary: Origin debe enviarse siempre que se evalúe el origen",
+    "Evidencia": "Revisión de código + pruebas de integración",
     "Impacto": "Configuración CORS potencialmente incorrecta",
-    "CorreccionRecomendada": "Validar origen contra allowlist y añadir Vary",
+    "CorreccionRecomendada": "Soportar lista CSV, reflejar ACAO solo si coincide, enviar Vary: Origin siempre que se evalúe origen, 403 para origen no permitido (sin ACAO) en POST y OPTIONS, permitir sin Origin",
     "Esfuerzo": "M"
   },
   {

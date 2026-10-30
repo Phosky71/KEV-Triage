@@ -41,7 +41,7 @@ describe('Proxy integración (arnés)', () => {
 
   afterEach(async () => {
     await new Promise((r) => proxy.close(r));
-    await new Promise((r: any) => (upstream as any).close(r));
+    await new Promise((r: any) => (upstream as any).close(() => r()));
   });
 
   it('KT-010: ruta /foo/v1/systemone -> 404', async () => {
@@ -82,7 +82,7 @@ describe('Proxy integración (arnés)', () => {
     const res = await fetch(`http://127.0.0.1:${p2Port}/api/kev/v1/systemone`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     expect(res.status).toBe(504);
     await new Promise((r) => p2.close(r));
-    await new Promise((r: any) => (slow as any).close(r));
+    await new Promise((r: any) => (slow as any).close(() => r()));
   }, 10000);
 
   it('upstream caído -> 502', async () => {
@@ -95,11 +95,33 @@ describe('Proxy integración (arnés)', () => {
     await new Promise((r) => p2.close(r));
   });
 
-  it.fails('KT-011: Origin no permitido -> 403 sin ACAO', async () => {
+  it('KT-011: POST Origin no permitido -> 403 sin ACAO', async () => {
     const res = await fetch(`http://127.0.0.1:${proxyPort}/api/kev/v1/systemone`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Origin': 'http://evil.example' }, body: '{}' });
-    console.log('ORIGIN_EVIL_ACAO:', res.headers.get('access-control-allow-origin'));
     expect(res.status).toBe(403);
     expect(res.headers.get('access-control-allow-origin')).toBeNull();
+  });
+
+  it('KT-011: OPTIONS Origin no permitido -> 403 con Vary: Origin', async () => {
+    const res = await fetch(`http://127.0.0.1:${proxyPort}/api/kev/v1/systemone`, { method: 'OPTIONS', headers: { 'Origin': 'http://evil.example', 'Access-Control-Request-Method': 'POST' } });
+    expect(res.status).toBe(403);
+    expect(res.headers.get('vary')).toMatch(/Origin/i);
+    expect(res.headers.get('access-control-allow-origin')).toBeNull();
+  });
+
+  it('KT-011: lista de dos orígenes permitidos', async () => {
+    const { createProxyServer } = await import('../../server/proxy.mjs');
+    // @ts-ignore
+    const p = createProxyServer({ port: 0, kevUpstreamUrl: `http://127.0.0.1:${upstreamPort}`, allowedOrigin: 'http://a.example,http://b.example' });
+    await new Promise((r: any) => (p as any).listen(0, '127.0.0.1', r));
+    // @ts-ignore
+    const portp = (p.address() as any).port;
+    const r1 = await fetch(`http://127.0.0.1:${portp}/api/kev/v1/systemone`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Origin': 'http://b.example' }, body: '{}' });
+    expect(r1.status).toBe(200);
+    expect(r1.headers.get('access-control-allow-origin')).toBe('http://b.example');
+    const r2 = await fetch(`http://127.0.0.1:${portp}/api/kev/v1/systemone`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Origin': 'http://c.example' }, body: '{}' });
+    expect(r2.status).toBe(403);
+    expect(r2.headers.get('access-control-allow-origin')).toBeNull();
+    await new Promise((r: any) => (p as any).close(() => r()));
   });
 
   it('Origin permitido -> ACAO', async () => {

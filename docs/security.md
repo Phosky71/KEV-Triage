@@ -17,7 +17,7 @@ headers.Authorization = `Bearer ${KEV_API_KEY}`; // Solo si existe
 ```
 - Nunca loggea `KEV_API_KEY`
 - En catch genérico devuelve 502 sin detalles del upstream
-- CORS restringido por `ALLOWED_ORIGIN`
+- CORS restringido por `ALLOWED_ORIGIN` (lista separada por comas). `Access-Control-Allow-Origin` solo se refleja con origen permitido, `Vary: Origin` siempre que se evalúe el origen, `403` sin ACAO para origen no permitido en POST/OPTIONS, peticiones sin Origin permitidas.
 
 ### Cliente
 - No almacena credenciales
