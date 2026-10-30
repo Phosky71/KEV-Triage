@@ -80,10 +80,10 @@ O inferido desde `answer` (true/false/yes/no) + `probability/confidence`
 - AbortController para cancelación externa
 
 ### Validación previa
-`isServiceUrlConfigured()` rechaza URLs vacías o que contengan `TU_USUARIO--kev-api.modal.run` (placeholder).
+`isServiceUrlConfigured()` rechaza URLs vacías o que contengan `TU_USUARIO--kev-api.modal.run` (placeholder). Rechaza credenciales (`user:pass@`), fragmentos (`#`) y query string (`?`). Acepta solo `http(s)` o rutas relativas (`/api/kev`).
 
 ### Resolución de endpoint
-`resolveSystemOneEndpoint()` normaliza y garantiza sufijo `/v1/systemone` sin duplicados.
+`resolveSystemOneEndpoint()` normaliza y garantiza sufijo `/v1/systemone` sin duplicados (evita `/v1/v1/...`). Soporta base `/api/kev` → `/api/kev/v1/systemone`.
 
 ### Gestión de errores
 Tipos de error (`TriageErrorCode`): `UNCONFIGURED_SERVICE`, `NETWORK_ERROR`, `TIMEOUT_ERROR`, `HTTP_ERROR`, `INVALID_JSON`, `INVALID_SCHEMA`

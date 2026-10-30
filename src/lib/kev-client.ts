@@ -58,17 +58,22 @@ export function buildSystemOnePayload(
  * sin duplicar barras ni segmentos `/v1/systemone`.
  */
 export function resolveSystemOneEndpoint(baseUrl: string): string {
-  const trimmed = baseUrl.trim().replace(/\/+$/, '');
+  const trimmed = baseUrl.trim();
   if (!trimmed) {
     return '';
   }
-  if (trimmed.endsWith('/v1/systemone')) {
-    return trimmed;
+  // Normalizar barras, pero mantener ://
+  let normalized = trimmed.replace(/([^:])\/+/g, '$1/').replace(/\/+$/g, '');
+  if (!normalized) {
+    return '';
   }
-  if (trimmed.endsWith('/v1')) {
-    return `${trimmed}/systemone`;
+  if (normalized.endsWith('/v1/systemone')) {
+    return normalized;
   }
-  return `${trimmed}/v1/systemone`;
+  if (normalized.endsWith('/v1')) {
+    return `${normalized}/systemone`;
+  }
+  return `${normalized}/v1/systemone`;
 }
 
 /**
@@ -82,10 +87,39 @@ export function isServiceUrlConfigured(rawEnvUrl?: string): boolean {
   if (url.includes('TU_USUARIO--kev-api.modal.run')) {
     return false;
   }
+  // Rechazar credenciales, fragmentos y query string
+  if (url.includes('@')) {
+    return false;
+  }
+  if (url.includes('#')) {
+    return false;
+  }
+  if (url.includes('?')) {
+    return false;
+  }
   try {
     const parsed = new URL(url);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    if (parsed.username || parsed.password) {
+      return false;
+    }
+    if (parsed.hash) {
+      return false;
+    }
+    if (parsed.search) {
+      return false;
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return false;
+    }
+    // Aceptar rutas relativas solo si se construyen desde base válida? El requisito dice "acepta solo http/https y rutas relativas (/api/kev)"
+    // Pero new URL con ruta relativa requiere base; aquí validamos la cadena completa
+    return true;
   } catch {
+    // Intentar ruta relativa
+    if (url.startsWith('/')) {
+      // rutas relativas permitidas
+      return true;
+    }
     return false;
   }
 }
@@ -126,7 +160,7 @@ export async function analyzeIncidentWithKev(
       code: 'UNCONFIGURED_SERVICE',
       title: 'Servicio Kev no configurado',
       message:
-        'No se ha detectado una URL válida en VITE_MODAL_API_URL (o mantiene el valor de plantilla TU_USUARIO--kev-api.modal.run). Configure una instancia real de Kev en su archivo .env o active explícitamente el Modo de Demostración.',
+        'No se ha detectado una URL válida en VITE_MODAL_API_URL (o mantiene el valor de plantilla TU_USUARIO--kev-api.modal.run). No se permiten credenciales, fragmentos ni query string. Use http(s) o ruta relativa válida.',
       diagnostics: 'Endpoint pendiente de configuración en variables de entorno.',
     });
   }
