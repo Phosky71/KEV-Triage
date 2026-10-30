@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import http from 'node:http';
 import { adaptKevResponse, KevValidationError } from '../lib/kev-adapter';
-import { buildSystemOnePayload, resolveSystemOneEndpoint } from '../lib/kev-client';
+import { buildSystemOnePayload, resolveSystemOneEndpoint, isServiceUrlConfigured, analyzeIncidentWithKev, KevClientException } from '../lib/kev-client';
+import { createProxyServer } from '../../server/proxy.mjs';
 
 const INVALID_SCHEMA_MSG = 'Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga.';
 
@@ -30,6 +32,70 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
     expect(resolveSystemOneEndpoint('https://user--kev-api.modal.run/v1/systemone')).toBe(
       'https://user--kev-api.modal.run/v1/systemone'
     );
+  });
+
+  it('KT-008: credenciales, fragmento, query -> UNCONFIGURED_SERVICE', () => {
+    expect(isServiceUrlConfigured('http://user:pass@host.com/api')).toBe(false);
+    expect(isServiceUrlConfigured('http://localhost:8787/api#frag')).toBe(false);
+    expect(isServiceUrlConfigured('http://localhost:8787/api?x=1')).toBe(false);
+  });
+
+  it('KT-008: esquemas no http/https rechazados', () => {
+    expect(isServiceUrlConfigured('ftp://example.com/api')).toBe(false);
+    expect(isServiceUrlConfigured('javascript:alert(1)')).toBe(false);
+  });
+
+  it('KT-008: ruta relativa /api/kev válida', () => {
+    expect(isServiceUrlConfigured('/api/kev')).toBe(true);
+  });
+
+  it('KT-008: barras duplicadas y finales; sufijo ya presente sin duplicar', () => {
+    expect(resolveSystemOneEndpoint('http://localhost:8787/api/kev//')).toBe('http://localhost:8787/api/kev/v1/systemone');
+    expect(resolveSystemOneEndpoint('http://localhost:8787/api/kev/')).toBe('http://localhost:8787/api/kev/v1/systemone');
+    expect(resolveSystemOneEndpoint('http://localhost:8787/api/kev/v1/systemone')).toBe('http://localhost:8787/api/kev/v1/systemone');
+  });
+
+  it('KT-008: http://127.0.0.1:31415/v1 NO produce /v1/v1/...', () => {
+    const res = resolveSystemOneEndpoint('http://127.0.0.1:31415/v1');
+    expect(res).toBe('http://127.0.0.1:31415/v1/systemone');
+    expect(res.includes('/v1/v1/')).toBe(false);
+  });
+
+  it('KT-008: placeholder no configurado', () => {
+    expect(isServiceUrlConfigured('https://TU_USUARIO--kev-api.modal.run')).toBe(false);
+  });
+
+  it('KT-008: contrato cliente real contra createProxyServer con base http://localhost:<puerto>/api/kev', async () => {
+    const upstream = http.createServer((req, res) => {
+      let body = '';
+      req.on('data', (c) => (body += c));
+      req.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          expect(parsed.questions).toBeDefined();
+          expect(Array.isArray(parsed.questions)).toBe(true);
+        } catch {}
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          model: 'kev-test',
+          answers: {
+            department: { choice: 'backend', confidence: 0.9 },
+            severity: { level: 'high' },
+            is_security_leak: { affirmative_probability: 0.1 },
+          },
+        }));
+      });
+    });
+    await new Promise((r: any) => (upstream as any).listen(0, '127.0.0.1', r));
+    const upPort = (upstream.address() as any).port;
+    // @ts-ignore
+    const proxy = createProxyServer({ port: 0, kevUpstreamUrl: `http://127.0.0.1:${upPort}`, allowedOrigin: 'http://localhost:5173' });
+    await new Promise((r: any) => (proxy as any).listen(0, '127.0.0.1', r));
+    const pPort = (proxy.address() as any).port;
+    const res = await analyzeIncidentWithKev({ incidentText: 'test', baseUrl: `http://localhost:${pPort}/api/kev`, timeoutMs: 5000 });
+    expect(res.department.selected).toBe('backend');
+    await new Promise((r: any) => (proxy as any).close(() => r()));
+    await new Promise((r: any) => (upstream as any).close(() => r()));
   });
 
   it('interpreta una respuesta válida de Kev y separa latencia del modelo y del cliente', () => {
