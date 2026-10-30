@@ -13,5 +13,9 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     css: false,
     exclude: [...configDefaults.exclude],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}', 'server/**/*.mjs'],
+    },
   },
 });
