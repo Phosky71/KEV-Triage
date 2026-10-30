@@ -8,7 +8,9 @@
     "Evidencia": "npm run build falla con TS2339. npx tsc --noEmit pasa",
     "Impacto": "Build de producción falla. No se puede desplegar.",
     "CorreccionRecomendada": "Añadir \"types\": [\"vite/client\"] a tsconfig.app.json",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "51cd0ea"
   },
   {
     "ID": "KT-002",
@@ -19,7 +21,9 @@
     "Evidencia": "npm run build falla con TS2769 en defineConfig",
     "Impacto": "Build falla.",
     "CorreccionRecomendada": "Alinear versiones o ajustar imports/configuración",
-    "Esfuerzo": "M"
+    "Esfuerzo": "M",
+    "estado": "corregido",
+    "commit": "51cd0ea"
   },
   {
     "ID": "KT-003",
@@ -30,7 +34,9 @@
     "Evidencia": "npm test: 3 tests fallidos en App.test.tsx",
     "Impacto": "Suite de tests roja. CI fallaría.",
     "CorreccionRecomendada": "Revisar labels únicos en IncidentInput.tsx",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "049c822"
   },
   {
     "ID": "KT-004",
@@ -41,7 +47,10 @@
     "Evidencia": "npm audit report",
     "Impacto": "Riesgo de RCE en entorno de desarrollo/build",
     "CorreccionRecomendada": "Evaluar npm audit fix o actualización de Vitest",
-    "Esfuerzo": "M"
+    "Esfuerzo": "M",
+    "estado": "corregido",
+    "commit": "49d2c24",
+    "nota": "solo devDependencies; producción sin vulnerabilidades"
   },
   {
     "ID": "KT-005",
