@@ -1,0 +1,1917 @@
+﻿
+> kev-triage@1.0.0 test
+> vitest run
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Trabajo/Proyectos/zSinRevisar/kev-triage[39m
+
+ [32mÔ£ô[39m src/test/triage-rules.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/test/kev-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+ [31mÔØ»[39m src/test/App.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[90m 274[2mms[22m[39m
+[31m   [31m├ù[31m Integraci├│n de interfaz Kev Triage (App.tsx)[2m > [22mrenderiza las tres plantillas obligatorias y carga su texto al seleccionarlas[90m 158[2mms[22m[31m[39m
+[31m     ÔåÆ Found multiple elements with the text of: /Descripci├│n t├®cnica de la incidencia/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<section[31m
+  [33maria-labelledby[31m=[32m"incident-input-heading"[31m
+  [33mclass[31m=[32m"flex flex-col rounded-xl border border-zinc-800/90 bg-zinc-900/40 p-5 sm:p-6 space-y-6"[31m
+[36m>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"rounded-lg border border-zinc-800 bg-zinc-950/70 p-3.5 space-y-3"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-2"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-center gap-2"[31m
+      [36m>[31m
+        [36m<svg[31m
+          [33maria-hidden[31m=[32m"true"[31m
+          [33mclass[31m=[32m"lucide lucide-server h-4 w-4 text-indigo-400"[31m
+          [33mfill[31m=[32m"none"[31m
+          [33mheight[31m=[32m"24"[31m
+          [33mstroke[31m=[32m"currentColor"[31m
+          [33mstroke-linecap[31m=[32m"round"[31m
+          [33mstroke-linejoin[31m=[32m"round"[31m
+          [33mstroke-width[31m=[32m"2"[31m
+          [33mviewBox[31m=[32m"0 0 24 24"[31m
+          [33mwidth[31m=[32m"24"[31m
+          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+        [36m>[31m
+          [36m<rect[31m
+            [33mheight[31m=[32m"8"[31m
+            [33mrx[31m=[32m"2"[31m
+            [33mry[31m=[32m"2"[31m
+            [33mwidth[31m=[32m"20"[31m
+            [33mx[31m=[32m"2"[31m
+            [33my[31m=[32m"2"[31m
+          [36m/>[31m
+          [36m<rect[31m
+            [33mheight[31m=[32m"8"[31m
+            [33mrx[31m=[32m"2"[31m
+            [33mry[31m=[32m"2"[31m
+            [33mwidth[31m=[32m"20"[31m
+            [33mx[31m=[32m"2"[31m
+            [33my[31m=[32m"14"[31m
+          [36m/>[31m
+          [36m<line[31m
+            [33mx1[31m=[32m"6"[31m
+            [33mx2[31m=[32m"6.01"[31m
+            [33my1[31m=[32m"6"[31m
+            [33my2[31m=[32m"6"[31m
+          [36m/>[31m
+          [36m<line[31m
+            [33mx1[31m=[32m"6"[31m
+            [33mx2[31m=[32m"6.01"[31m
+            [33my1[31m=[32m"18"[31m
+            [33my2[31m=[32m"18"[31m
+          [36m/>[31m
+        [36m</svg>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"text-xs font-semibold uppercase tracking-wider text-zinc-200"[31m
+        [36m>[31m
+          [0mModo de Operaci├│n[0m
+        [36m</span>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33maria-label[31m=[32m"Seleccionar modo de operaci├│n"[31m
+        [33mclass[31m=[32m"inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5"[31m
+        [33mrole[31m=[32m"group"[31m
+      [36m>[31m
+        [36m<button[31m
+          [33maria-pressed[31m=[32m"true"[31m
+          [33mclass[31m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 bg-indigo-600 text-white"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [0mAPI Kev Real[0m
+        [36m</button>[31m
+        [36m<button[31m
+          [33maria-pressed[31m=[32m"false"[31m
+          [33mclass[31m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-zinc-400 hover:text-zinc-200"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [0mModo Demostraci├│n[0m
+        [36m</button>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex items-start gap-2 rounded border border-amber-500/30 bg-amber-950/20 p-2.5 text-xs text-amber-200"[31m
+    [36m>[31m
+      [36m<svg[31m
+        [33mclass[31m=[32m"lucide lucide-circle-alert h-4 w-4 text-amber-400 shrink-0 mt-0.5"[31m
+        [33mfill[31m=[32m"none"[31m
+        [33mheight[31m=[32m"24"[31m
+        [33mstroke[31m=[32m"currentColor"[31m
+        [33mstroke-linecap[31m=[32m"round"[31m
+        [33mstroke-linejoin[31m=[32m"round"[31m
+        [33mstroke-width[31m=[32m"2"[31m
+        [33mviewBox[31m=[32m"0 0 24 24"[31m
+        [33mwidth[31m=[32m"24"[31m
+        [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+      [36m>[31m
+        [36m<circle[31m
+          [33mcx[31m=[32m"12"[31m
+          [33mcy[31m=[32m"12"[31m
+          [33mr[31m=[32m"10"[31m
+        [36m/>[31m
+        [36m<line[31m
+          [33mx1[31m=[32m"12"[31m
+          [33mx2[31m=[32m"12"[31m
+          [33my1[31m=[32m"8"[31m
+          [33my2[31m=[32m"12"[31m
+        [36m/>[31m
+        [36m<line[31m
+          [33mx1[31m=[32m"12"[31m
+          [33mx2[31m=[32m"12.01"[31m
+          [33my1[31m=[32m"16"[31m
+          [33my2[31m=[32m"16"[31m
+        [36m/>[31m
+      [36m</svg>[31m
+      [36m<div>[31m
+        [36m<strong[31m
+          [33mclass[31m=[32m"font-semibold"[31m
+        [36m>[31m
+          [0mEndpoint Kev no configurado:[0m
+        [36m</strong>[31m
+        [0m [0m
+        [0mConfigure [0m
+        [36m<code[31m
+          [33mclass[31m=[32m"font-mono text-amber-300"[31m
+        [36m>[31m
+          [0mVITE_MODAL_API_URL[0m
+        [36m</code>[31m
+        [0m en su archivo [0m
+        [36m<code[31m
+          [33mclass[31m=[32m"font-mono text-amber-300"[31m
+        [36m>[31m
+          [0m.env[0m
+        [36m</code>[31m
+        [0m para conectar con un servidor real, o active expl├¡citamente el [0m
+        [36m<strong>[31m
+          [0mModo Demostraci├│n[0m
+        [36m</strong>[31m
+        [0m arriba para inspeccionar las reglas de negocio con fixtures conocidos.[0m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"space-y-2.5"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex items-center justify-between"[31m
+    [36m>[31m
+      [36m<span[31m
+        [33mclass[31m=[32m"text-xs font-medium uppercase tracking-wider text-zinc-400"[31m
+      [36m>[31m
+        [0mPlantillas de prueba verificadas[0m
+      [36m</span>[31m
+      [36m<span[31m
+        [33mclass[31m=[32m"text-xs text-zinc-500"[31m
+      [36m>[31m
+        [0mEntradas de ejemplo (no fuerzan respuestas)[0m
+      [36m</span>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"grid grid-cols-1 gap-2"[31m
+    [36m>[31m
+      [36m<button[31m
+        [33maria-pressed[31m=[32m"true"[31m
+        [33mclass[31m=[32m"group text-left rounded-lg border p-3 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed border-indigo-500/60 bg-indigo-950/30 text-zinc-100"[31m
+        [33mtype[31m=[32m"button"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start justify-between gap-2"[31m
+        [36m>[31m
+          [36m<div[31m
+         ...
+
+Ignored nodes: comments, script, style
+[36m<textarea[31m
+  [33maria-describedby[31m=[32m"incident-validation-msg incident-char-counter"[31m
+  [33maria-invalid[31m=[32m"false"[31m
+  [33mclass[31m=[32m"w-full rounded-lg border bg-zinc-950 p-3.5 text-sm text-zinc-100 placeholder-zinc-500 transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 border-zinc-800 focus:border-indigo-500 focus:ring-indigo-500/30"[31m
+  [33mid[31m=[32m"incident-description"[31m
+  [33mplaceholder[31m=[32m"Describa los s├¡ntomas t├®cnicos, c├│digos de error HTTP, componentes afectados y cualquier observaci├│n de diagn├│stico..."[31m
+  [33mrows[31m=[32m"6"[31m
+[36m>[31m
+  [0mEl endpoint de autenticaci├│n devuelve errores HTTP 500 desde el ├║ltimo despliegue. Durante el diagn├│stico se detect├│ que un token de acceso podr├¡a haber aparecido en un registro compartido. El servicio afecta a varios usuarios y es necesario investigar la causa del error y el posible alcance de la exposici├│n.[0m
+[36m</textarea>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 bg-indigo-500/10 text-indigo-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-square-terminal h-5 w-5"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m7 11 2-2-2-2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M11 13h4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"18"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mry[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"18"[31m
+                  [33mx[31m=[32m"3"[31m
+                  [33my[31m=[32m"3"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</div>[31m
+            [36m<div>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-2"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"font-bold tracking-tight text-base text-zinc-100"[31m
+                [36m>[31m
+                  [0mKev Triage[0m
+                [36m</span>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-xs text-zinc-400 hidden sm:block"[31m
+              [36m>[31m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3 text-xs"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-zinc-300"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"16"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"16"[31m
+                  [33mx[31m=[32m"4"[31m
+                  [33my[31m=[32m"4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"6"[31m
+                  [33mrx[31m=[32m"1"[31m
+                  [33mwidth[31m=[32m"6"[31m
+                  [33mx[31m=[32m"9"[31m
+                  [33my[31m=[32m"9"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 20v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 20v2"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mMotor: Kev[0m
+            [36m</span>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+ ...[39m
+[31m   [31m├ù[31m Integraci├│n de interfaz Kev Triage (App.tsx)[2m > [22midentifica claramente los resultados simulados como ┬½Datos de demostraci├│n┬╗ y muestra alerta de seguridad[90m 97[2mms[22m[31m[39m
+[31m     ÔåÆ Found multiple elements with the text: /Datos de demostraci├│n/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[31m
+  [33mclass[31m=[32m"w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed bg-amber-500 text-zinc-950 hover:bg-amber-400 focus-visible:ring-amber-400"[31m
+  [33mtype[31m=[32m"submit"[31m
+[36m>[31m
+  [36m<svg[31m
+    [33maria-hidden[31m=[32m"true"[31m
+    [33mclass[31m=[32m"lucide lucide-send h-4 w-4"[31m
+    [33mfill[31m=[32m"none"[31m
+    [33mheight[31m=[32m"24"[31m
+    [33mstroke[31m=[32m"currentColor"[31m
+    [33mstroke-linecap[31m=[32m"round"[31m
+    [33mstroke-linejoin[31m=[32m"round"[31m
+    [33mstroke-width[31m=[32m"2"[31m
+    [33mviewBox[31m=[32m"0 0 24 24"[31m
+    [33mwidth[31m=[32m"24"[31m
+    [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+  [36m>[31m
+    [36m<path[31m
+      [33md[31m=[32m"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"[31m
+    [36m/>[31m
+    [36m<path[31m
+      [33md[31m=[32m"m21.854 2.147-10.94 10.939"[31m
+    [36m/>[31m
+  [36m</svg>[31m
+  [0mEvaluar con Datos de Demostraci├│n[0m
+[36m</button>[31m
+
+Ignored nodes: comments, script, style
+[36m<span[31m
+  [33mclass[31m=[32m"inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-300"[31m
+[36m>[31m
+  [36m<svg[31m
+    [33maria-hidden[31m=[32m"true"[31m
+    [33mclass[31m=[32m"lucide lucide-flask-conical h-3.5 w-3.5"[31m
+    [33mfill[31m=[32m"none"[31m
+    [33mheight[31m=[32m"24"[31m
+    [33mstroke[31m=[32m"currentColor"[31m
+    [33mstroke-linecap[31m=[32m"round"[31m
+    [33mstroke-linejoin[31m=[32m"round"[31m
+    [33mstroke-width[31m=[32m"2"[31m
+    [33mviewBox[31m=[32m"0 0 24 24"[31m
+    [33mwidth[31m=[32m"24"[31m
+    [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+  [36m>[31m
+    [36m<path[31m
+      [33md[31m=[32m"M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"[31m
+    [36m/>[31m
+    [36m<path[31m
+      [33md[31m=[32m"M6.453 15h11.094"[31m
+    [36m/>[31m
+    [36m<path[31m
+      [33md[31m=[32m"M8.5 2h7"[31m
+    [36m/>[31m
+  [36m</svg>[31m
+  [0mDatos de demostraci├│n[0m
+[36m</span>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 bg-indigo-500/10 text-indigo-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-square-terminal h-5 w-5"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m7 11 2-2-2-2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M11 13h4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"18"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mry[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"18"[31m
+                  [33mx[31m=[32m"3"[31m
+                  [33my[31m=[32m"3"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</div>[31m
+            [36m<div>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-2"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"font-bold tracking-tight text-base text-zinc-100"[31m
+                [36m>[31m
+                  [0mKev Triage[0m
+                [36m</span>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-xs text-zinc-400 hidden sm:block"[31m
+              [36m>[31m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3 text-xs"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-zinc-300"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"16"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"16"[31m
+                  [33mx[31m=[32m"4"[31m
+                  [33my[31m=[32m"4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"6"[31m
+                  [33mrx[31m=[32m"1"[31m
+                  [33mwidth[31m=[32m"6"[31m
+                  [33mx[31m=[32m"9"[31m
+                  [33my[31m=[32m"9"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 20v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 20v2"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mMotor: Kev[0m
+            [36m</span>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+ ...[39m
+[31m   [31m├ù[31m Integraci├│n de interfaz Kev Triage (App.tsx)[2m > [22mconserva el texto introducido si ocurre un fallo de red y evita env├¡os duplicados en curso[90m 18[2mms[22m[31m[39m
+[31m     ÔåÆ Found multiple elements with the text of: /Descripci├│n t├®cnica de la incidencia/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<section[31m
+  [33maria-labelledby[31m=[32m"incident-input-heading"[31m
+  [33mclass[31m=[32m"flex flex-col rounded-xl border border-zinc-800/90 bg-zinc-900/40 p-5 sm:p-6 space-y-6"[31m
+[36m>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"rounded-lg border border-zinc-800 bg-zinc-950/70 p-3.5 space-y-3"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-2"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-center gap-2"[31m
+      [36m>[31m
+        [36m<svg[31m
+          [33maria-hidden[31m=[32m"true"[31m
+          [33mclass[31m=[32m"lucide lucide-server h-4 w-4 text-indigo-400"[31m
+          [33mfill[31m=[32m"none"[31m
+          [33mheight[31m=[32m"24"[31m
+          [33mstroke[31m=[32m"currentColor"[31m
+          [33mstroke-linecap[31m=[32m"round"[31m
+          [33mstroke-linejoin[31m=[32m"round"[31m
+          [33mstroke-width[31m=[32m"2"[31m
+          [33mviewBox[31m=[32m"0 0 24 24"[31m
+          [33mwidth[31m=[32m"24"[31m
+          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+        [36m>[31m
+          [36m<rect[31m
+            [33mheight[31m=[32m"8"[31m
+            [33mrx[31m=[32m"2"[31m
+            [33mry[31m=[32m"2"[31m
+            [33mwidth[31m=[32m"20"[31m
+            [33mx[31m=[32m"2"[31m
+            [33my[31m=[32m"2"[31m
+          [36m/>[31m
+          [36m<rect[31m
+            [33mheight[31m=[32m"8"[31m
+            [33mrx[31m=[32m"2"[31m
+            [33mry[31m=[32m"2"[31m
+            [33mwidth[31m=[32m"20"[31m
+            [33mx[31m=[32m"2"[31m
+            [33my[31m=[32m"14"[31m
+          [36m/>[31m
+          [36m<line[31m
+            [33mx1[31m=[32m"6"[31m
+            [33mx2[31m=[32m"6.01"[31m
+            [33my1[31m=[32m"6"[31m
+            [33my2[31m=[32m"6"[31m
+          [36m/>[31m
+          [36m<line[31m
+            [33mx1[31m=[32m"6"[31m
+            [33mx2[31m=[32m"6.01"[31m
+            [33my1[31m=[32m"18"[31m
+            [33my2[31m=[32m"18"[31m
+          [36m/>[31m
+        [36m</svg>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"text-xs font-semibold uppercase tracking-wider text-zinc-200"[31m
+        [36m>[31m
+          [0mModo de Operaci├│n[0m
+        [36m</span>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33maria-label[31m=[32m"Seleccionar modo de operaci├│n"[31m
+        [33mclass[31m=[32m"inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5"[31m
+        [33mrole[31m=[32m"group"[31m
+      [36m>[31m
+        [36m<button[31m
+          [33maria-pressed[31m=[32m"true"[31m
+          [33mclass[31m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 bg-indigo-600 text-white"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [0mAPI Kev Real[0m
+        [36m</button>[31m
+        [36m<button[31m
+          [33maria-pressed[31m=[32m"false"[31m
+          [33mclass[31m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-zinc-400 hover:text-zinc-200"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [0mModo Demostraci├│n[0m
+        [36m</button>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"space-y-2.5"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex items-center justify-between"[31m
+    [36m>[31m
+      [36m<span[31m
+        [33mclass[31m=[32m"text-xs font-medium uppercase tracking-wider text-zinc-400"[31m
+      [36m>[31m
+        [0mPlantillas de prueba verificadas[0m
+      [36m</span>[31m
+      [36m<span[31m
+        [33mclass[31m=[32m"text-xs text-zinc-500"[31m
+      [36m>[31m
+        [0mEntradas de ejemplo (no fuerzan respuestas)[0m
+      [36m</span>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"grid grid-cols-1 gap-2"[31m
+    [36m>[31m
+      [36m<button[31m
+        [33maria-pressed[31m=[32m"false"[31m
+        [33mclass[31m=[32m"group text-left rounded-lg border p-3 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900"[31m
+        [33mtype[31m=[32m"button"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start justify-between gap-2"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-2 font-medium text-sm text-zinc-100"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-file-text h-4 w-4 text-zinc-500 group-hover:text-zinc-300 shrink-0"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"24"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"24"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M14 2v4a2 2 0 0 0 2 2h4"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M10 9H8"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M16 13H8"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M16 17H8"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [36m<span>[31m
+              [0mPlantilla A: Fallo 500 con Token Expuesto[0m
+            [36m</span>[31m
+          [36m</div>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"inline-flex items-center rounded border border-zinc-700/80 bg-zinc-800/80 px-2 py-0.5 font-mono text-[11px] text-zinc-300 shrink-0"[31m
+          [36m>[31m
+            [0mBackend / Seguridad[0m
+          [36m</span>[31m
+        [36m</div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-1 text-xs text-zinc-400 pl-6"[31m
+        [36m>[31m
+          [0mPrueba tanto la clasificaci├│n t├®cnica como la regla de alerta de seguridad.[0m
+        [36m</p>[31m
+      [36m</button>[31m
+      [36m<button[31m
+     ...
+
+Ignored nodes: comments, script, style
+[36m<textarea[31m
+  [33maria-describedby[31m=[32m"incident-validation-msg incident-char-counter"[31m
+  [33maria-invalid[31m=[32m"false"[31m
+  [33mclass[31m=[32m"w-full rounded-lg border bg-zinc-950 p-3.5 text-sm text-zinc-100 placeholder-zinc-500 transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 border-zinc-800 focus:border-indigo-500 focus:ring-indigo-500/30"[31m
+  [33mid[31m=[32m"incident-description"[31m
+  [33mplaceholder[31m=[32m"Describa los s├¡ntomas t├®cnicos, c├│digos de error HTTP, componentes afectados y cualquier observaci├│n de diagn├│stico..."[31m
+  [33mrows[31m=[32m"6"[31m
+[36m/>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 bg-indigo-500/10 text-indigo-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-square-terminal h-5 w-5"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m7 11 2-2-2-2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M11 13h4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"18"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mry[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"18"[31m
+                  [33mx[31m=[32m"3"[31m
+                  [33my[31m=[32m"3"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</div>[31m
+            [36m<div>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-2"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"font-bold tracking-tight text-base text-zinc-100"[31m
+                [36m>[31m
+                  [0mKev Triage[0m
+                [36m</span>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-xs text-zinc-400 hidden sm:block"[31m
+              [36m>[31m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-3 text-xs"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-zinc-300"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"16"[31m
+                  [33mrx[31m=[32m"2"[31m
+                  [33mwidth[31m=[32m"16"[31m
+                  [33mx[31m=[32m"4"[31m
+                  [33my[31m=[32m"4"[31m
+                [36m/>[31m
+                [36m<rect[31m
+                  [33mheight[31m=[32m"6"[31m
+                  [33mrx[31m=[32m"1"[31m
+                  [33mwidth[31m=[32m"6"[31m
+                  [33mx[31m=[32m"9"[31m
+                  [33my[31m=[32m"9"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15 20v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M2 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 15h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M20 9h2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 2v2"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 20v2"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [0mMotor: Kev[0m
+            [36m</span>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+ ...[39m
+
+node.exe : [31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Failed Tests 3 [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31mÔÄ»ÔÄ»ÔÄ»Ô...»ÔÄ»ÔÄ»ÔÄ»[39m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[31m[1m[7m FAIL [27m[22m[39m src/test/App.test.tsx[2m > [22mIntegraci├│n de interfaz Kev Triage (App.tsx)[2m 
+> [22mrenderiza las tres plantillas obligatorias y carga su texto al seleccionarlas
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text of: /Descripci├│n t├®cnica de la 
+incidencia/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"incident-input-heading"[39m
+  [33mclass[39m=[32m"flex flex-col rounded-xl border border-zinc-800/90 bg-zinc-900/40 p-5 sm:p-6 space-y-6"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"rounded-lg border border-zinc-800 bg-zinc-950/70 p-3.5 space-y-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-server h-4 w-4 text-indigo-400"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<rect[39m
+            [33mheight[39m=[32m"8"[39m
+            [33mrx[39m=[32m"2"[39m
+            [33mry[39m=[32m"2"[39m
+            [33mwidth[39m=[32m"20"[39m
+            [33mx[39m=[32m"2"[39m
+            [33my[39m=[32m"2"[39m
+          [36m/>[39m
+          [36m<rect[39m
+            [33mheight[39m=[32m"8"[39m
+            [33mrx[39m=[32m"2"[39m
+            [33mry[39m=[32m"2"[39m
+            [33mwidth[39m=[32m"20"[39m
+            [33mx[39m=[32m"2"[39m
+            [33my[39m=[32m"14"[39m
+          [36m/>[39m
+          [36m<line[39m
+            [33mx1[39m=[32m"6"[39m
+            [33mx2[39m=[32m"6.01"[39m
+            [33my1[39m=[32m"6"[39m
+            [33my2[39m=[32m"6"[39m
+          [36m/>[39m
+          [36m<line[39m
+            [33mx1[39m=[32m"6"[39m
+            [33mx2[39m=[32m"6.01"[39m
+            [33my1[39m=[32m"18"[39m
+            [33my2[39m=[32m"18"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs font-semibold uppercase tracking-wider text-zinc-200"[39m
+        [36m>[39m
+          [0mModo de Operaci├│n[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Seleccionar modo de operaci├│n"[39m
+        [33mclass[39m=[32m"inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5"[39m
+        [33mrole[39m=[32m"group"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"true"[39m
+          [33mclass[39m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-indigo-500 bg-indigo-600 text-white"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mAPI Kev Real[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-amber-500 text-zinc-400 hover:text-zinc-200"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mModo Demostraci├│n[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-start gap-2 rounded border border-amber-500/30 bg-amber-950/20 p-2.5 text-xs 
+text-amber-200"[39m
+    [36m>[39m
+      [36m<svg[39m
+        [33mclass[39m=[32m"lucide lucide-circle-alert h-4 w-4 text-amber-400 shrink-0 mt-0.5"[39m
+        [33mfill[39m=[32m"none"[39m
+        [33mheight[39m=[32m"24"[39m
+        [33mstroke[39m=[32m"currentColor"[39m
+        [33mstroke-linecap[39m=[32m"round"[39m
+        [33mstroke-linejoin[39m=[32m"round"[39m
+        [33mstroke-width[39m=[32m"2"[39m
+        [33mviewBox[39m=[32m"0 0 24 24"[39m
+        [33mwidth[39m=[32m"24"[39m
+        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+      [36m>[39m
+        [36m<circle[39m
+          [33mcx[39m=[32m"12"[39m
+          [33mcy[39m=[32m"12"[39m
+          [33mr[39m=[32m"10"[39m
+        [36m/>[39m
+        [36m<line[39m
+          [33mx1[39m=[32m"12"[39m
+          [33mx2[39m=[32m"12"[39m
+          [33my1[39m=[32m"8"[39m
+          [33my2[39m=[32m"12"[39m
+        [36m/>[39m
+        [36m<line[39m
+          [33mx1[39m=[32m"12"[39m
+          [33mx2[39m=[32m"12.01"[39m
+          [33my1[39m=[32m"16"[39m
+          [33my2[39m=[32m"16"[39m
+        [36m/>[39m
+      [36m</svg>[39m
+      [36m<div>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"font-semibold"[39m
+        [36m>[39m
+          [0mEndpoint Kev no configurado:[0m
+        [36m</strong>[39m
+        [0m [0m
+        [0mConfigure [0m
+        [36m<code[39m
+          [33mclass[39m=[32m"font-mono text-amber-300"[39m
+        [36m>[39m
+          [0mVITE_MODAL_API_URL[0m
+        [36m</code>[39m
+        [0m en su archivo [0m
+        [36m<code[39m
+          [33mclass[39m=[32m"font-mono text-amber-300"[39m
+        [36m>[39m
+          [0m.env[0m
+        [36m</code>[39m
+        [0m para conectar con un servidor real, o active expl├¡citamente el [0m
+        [36m<strong>[39m
+          [0mModo Demostraci├│n[0m
+        [36m</strong>[39m
+        [0m arriba para inspeccionar las reglas de negocio con fixtures conocidos.[0m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"space-y-2.5"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-xs font-medium uppercase tracking-wider text-zinc-400"[39m
+      [36m>[39m
+        [0mPlantillas de prueba verificadas[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-xs text-zinc-500"[39m
+      [36m>[39m
+        [0mEntradas de ejemplo (no fuerzan respuestas)[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-1 gap-2"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-pressed[39m=[32m"true"[39m
+        [33mclass[39m=[32m"group text-left rounded-lg border p-3 transition-colors duration-150 focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed 
+border-indigo-500/60 bg-indigo-950/30 text-zinc-100"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-2"[39m
+        [36m>[39m
+          [36m<div[39m
+         ...
+
+Ignored nodes: comments, script, style
+[36m<textarea[39m
+  [33maria-describedby[39m=[32m"incident-validation-msg incident-char-counter"[39m
+  [33maria-invalid[39m=[32m"false"[39m
+  [33mclass[39m=[32m"w-full rounded-lg border bg-zinc-950 p-3.5 text-sm text-zinc-100 placeholder-zinc-500 
+transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 border-zinc-800 focus:border-indigo-500 
+focus:ring-indigo-500/30"[39m
+  [33mid[39m=[32m"incident-description"[39m
+  [33mplaceholder[39m=[32m"Describa los s├¡ntomas t├®cnicos, c├│digos de error HTTP, componentes afectados y 
+cualquier observaci├│n de diagn├│stico..."[39m
+  [33mrows[39m=[32m"6"[39m
+[36m>[39m
+  [0mEl endpoint de autenticaci├│n devuelve errores HTTP 500 desde el ├║ltimo despliegue. Durante el diagn├│stico se 
+detect├│ que un token de acceso podr├¡a haber aparecido en un registro compartido. El servicio afecta a varios 
+usuarios y es necesario investigar la causa del error y el posible alcance de la exposici├│n.[0m
+[36m</textarea>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or 
+`findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between 
+gap-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 
+bg-indigo-500/10 text-indigo-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-square-terminal h-5 w-5"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m7 11 2-2-2-2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M11 13h4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"18"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mry[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"18"[39m
+                  [33mx[39m=[32m"3"[39m
+                  [33my[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-2"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-bold tracking-tight text-base text-zinc-100"[39m
+                [36m>[39m
+                  [0mKev Triage[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] 
+text-zinc-400"[39m
+                [36m>[39m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-zinc-400 hidden sm:block"[39m
+              [36m>[39m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 text-xs"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 
+1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 
+px-2.5 py-1 font-mono text-zinc-300"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"16"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"16"[39m
+                  [33mx[39m=[32m"4"[39m
+                  [33my[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"6"[39m
+                  [33mrx[39m=[32m"1"[39m
+                  [33mwidth[39m=[32m"6"[39m
+                  [33mx[39m=[32m"9"[39m
+                  [33my[39m=[32m"9"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 20v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mMotor: Kev[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+ ...
+[90m [2mÔØ»[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2mÔØ»[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2mÔØ»[22m getMultipleElementsFoundError 
+node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2mÔØ»[22m src/test/App.test.tsx:[2m27:29[22m[39m
+
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/3]ÔÄ»[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/test/App.test.tsx[2m > [22mIntegraci├│n de interfaz Kev Triage (App.tsx)[2m 
+> [22midentifica claramente los resultados simulados como ┬½Datos de demostraci├│n┬╗ y muestra alerta de seguridad
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: /Datos de demostraci├│n/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm 
+font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 
+focus-visible:ring-offset-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed bg-amber-500 text-zinc-950 
+hover:bg-amber-400 focus-visible:ring-amber-400"[39m
+  [33mtype[39m=[32m"submit"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-send h-4 w-4"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 
+0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"[39m
+    [36m/>[39m
+    [36m<path[39m
+      [33md[39m=[32m"m21.854 2.147-10.94 10.939"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mEvaluar con Datos de Demostraci├│n[0m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 
+px-2.5 py-0.5 text-xs font-semibold text-amber-300"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-flask-conical h-3.5 w-3.5"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 
+0 10 8V2"[39m
+    [36m/>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M6.453 15h11.094"[39m
+    [36m/>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M8.5 2h7"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mDatos de demostraci├│n[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or 
+`findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between 
+gap-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 
+bg-indigo-500/10 text-indigo-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-square-terminal h-5 w-5"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m7 11 2-2-2-2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M11 13h4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"18"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mry[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"18"[39m
+                  [33mx[39m=[32m"3"[39m
+                  [33my[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-2"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-bold tracking-tight text-base text-zinc-100"[39m
+                [36m>[39m
+                  [0mKev Triage[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] 
+text-zinc-400"[39m
+                [36m>[39m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-zinc-400 hidden sm:block"[39m
+              [36m>[39m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 text-xs"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 
+1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 
+px-2.5 py-1 font-mono text-zinc-300"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"16"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"16"[39m
+                  [33mx[39m=[32m"4"[39m
+                  [33my[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"6"[39m
+                  [33mrx[39m=[32m"1"[39m
+                  [33mwidth[39m=[32m"6"[39m
+                  [33mx[39m=[32m"9"[39m
+                  [33my[39m=[32m"9"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 20v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mMotor: Kev[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+ ...
+[90m [2mÔØ»[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2mÔØ»[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2mÔØ»[22m getMultipleElementsFoundError 
+node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2mÔØ»[22m src/test/App.test.tsx:[2m51:19[22m[39m
+    [90m 49| [39m    fireEvent[33m.[39m[34mclick[39m(submitBtn)[33m;[39m
+    [90m 50| [39m
+    [90m 51| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([36m/Datos de 
+demostraci├│n/i[39m))[33m.[39m[34mtoBeInTheDocume[39mÔÇª
+    [90m   | [39m                  [31m^[39m
+    [90m 52| [39m    [34mexpect[39m(
+    [90m 53| [39m      screen[33m.[39m[34mgetByText[39m(
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/3]ÔÄ»[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/test/App.test.tsx[2m > [22mIntegraci├│n de interfaz Kev Triage (App.tsx)[2m 
+> [22mconserva el texto introducido si ocurre un fallo de red y evita env├¡os duplicados en curso
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text of: /Descripci├│n t├®cnica de la 
+incidencia/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"incident-input-heading"[39m
+  [33mclass[39m=[32m"flex flex-col rounded-xl border border-zinc-800/90 bg-zinc-900/40 p-5 sm:p-6 space-y-6"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"rounded-lg border border-zinc-800 bg-zinc-950/70 p-3.5 space-y-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-server h-4 w-4 text-indigo-400"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<rect[39m
+            [33mheight[39m=[32m"8"[39m
+            [33mrx[39m=[32m"2"[39m
+            [33mry[39m=[32m"2"[39m
+            [33mwidth[39m=[32m"20"[39m
+            [33mx[39m=[32m"2"[39m
+            [33my[39m=[32m"2"[39m
+          [36m/>[39m
+          [36m<rect[39m
+            [33mheight[39m=[32m"8"[39m
+            [33mrx[39m=[32m"2"[39m
+            [33mry[39m=[32m"2"[39m
+            [33mwidth[39m=[32m"20"[39m
+            [33mx[39m=[32m"2"[39m
+            [33my[39m=[32m"14"[39m
+          [36m/>[39m
+          [36m<line[39m
+            [33mx1[39m=[32m"6"[39m
+            [33mx2[39m=[32m"6.01"[39m
+            [33my1[39m=[32m"6"[39m
+            [33my2[39m=[32m"6"[39m
+          [36m/>[39m
+          [36m<line[39m
+            [33mx1[39m=[32m"6"[39m
+            [33mx2[39m=[32m"6.01"[39m
+            [33my1[39m=[32m"18"[39m
+            [33my2[39m=[32m"18"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs font-semibold uppercase tracking-wider text-zinc-200"[39m
+        [36m>[39m
+          [0mModo de Operaci├│n[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Seleccionar modo de operaci├│n"[39m
+        [33mclass[39m=[32m"inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5"[39m
+        [33mrole[39m=[32m"group"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"true"[39m
+          [33mclass[39m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-indigo-500 bg-indigo-600 text-white"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mAPI Kev Real[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"rounded px-2.5 py-1 text-xs font-medium transition-colors focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-amber-500 text-zinc-400 hover:text-zinc-200"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mModo Demostraci├│n[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"space-y-2.5"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-xs font-medium uppercase tracking-wider text-zinc-400"[39m
+      [36m>[39m
+        [0mPlantillas de prueba verificadas[0m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-xs text-zinc-500"[39m
+      [36m>[39m
+        [0mEntradas de ejemplo (no fuerzan respuestas)[0m
+      [36m</span>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-1 gap-2"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-pressed[39m=[32m"false"[39m
+        [33mclass[39m=[32m"group text-left rounded-lg border p-3 transition-colors duration-150 focus:outline-none 
+focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed border-zinc-800 
+bg-zinc-900/60 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-2"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2 font-medium text-sm text-zinc-100"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-file-text h-4 w-4 text-zinc-500 group-hover:text-zinc-300 
+shrink-0"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 2v4a2 2 0 0 0 2 2h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 9H8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 13H8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17H8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mPlantilla A: Fallo 500 con Token Expuesto[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center rounded border border-zinc-700/80 bg-zinc-800/80 px-2 
+py-0.5 font-mono text-[11px] text-zinc-300 shrink-0"[39m
+          [36m>[39m
+            [0mBackend / Seguridad[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-1 text-xs text-zinc-400 pl-6"[39m
+        [36m>[39m
+          [0mPrueba tanto la clasificaci├│n t├®cnica como la regla de alerta de seguridad.[0m
+        [36m</p>[39m
+      [36m</button>[39m
+      [36m<button[39m
+     ...
+
+Ignored nodes: comments, script, style
+[36m<textarea[39m
+  [33maria-describedby[39m=[32m"incident-validation-msg incident-char-counter"[39m
+  [33maria-invalid[39m=[32m"false"[39m
+  [33mclass[39m=[32m"w-full rounded-lg border bg-zinc-950 p-3.5 text-sm text-zinc-100 placeholder-zinc-500 
+transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 border-zinc-800 focus:border-indigo-500 
+focus:ring-indigo-500/30"[39m
+  [33mid[39m=[32m"incident-description"[39m
+  [33mplaceholder[39m=[32m"Describa los s├¡ntomas t├®cnicos, c├│digos de error HTTP, componentes afectados y 
+cualquier observaci├│n de diagn├│stico..."[39m
+  [33mrows[39m=[32m"6"[39m
+[36m/>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or 
+`findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col bg-zinc-950 text-zinc-100"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-10"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between 
+gap-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/40 
+bg-indigo-500/10 text-indigo-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-square-terminal h-5 w-5"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m7 11 2-2-2-2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M11 13h4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"18"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mry[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"18"[39m
+                  [33mx[39m=[32m"3"[39m
+                  [33my[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-2"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-bold tracking-tight text-base text-zinc-100"[39m
+                [36m>[39m
+                  [0mKev Triage[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] 
+text-zinc-400"[39m
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m15 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 12:52:47
+[2m   Duration [22m 2.16s[2m (transform 194ms, setup 393ms, collect 481ms, tests 285ms, environment 2.03s, prepare 340ms)[22m
+
+                [36m>[39m
+                  [0mPOST /v1/systemone[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-zinc-400 hidden sm:block"[39m
+              [36m>[39m
+                [0mClasificaci├│n t├®cnica System 1 y enrutamiento determinista de incidencias[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 text-xs"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"hidden md:inline-flex items-center gap-1.5 text-zinc-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-shield h-3.5 w-3.5 text-emerald-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 
+1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mReglas deterministas TypeScript[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 
+px-2.5 py-1 font-mono text-zinc-300"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-cpu h-3.5 w-3.5 text-indigo-400"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"16"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"16"[39m
+                  [33mx[39m=[32m"4"[39m
+                  [33my[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"6"[39m
+                  [33mrx[39m=[32m"1"[39m
+                  [33mwidth[39m=[32m"6"[39m
+                  [33mx[39m=[32m"9"[39m
+                  [33my[39m=[32m"9"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 20v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M2 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 15h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 9h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mMotor: Kev[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+ ...
+[90m [2mÔØ»[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2mÔØ»[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2mÔØ»[22m getMultipleElementsFoundError 
+node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2mÔØ»[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2mÔØ»[22m src/test/App.test.tsx:[2m74:29[22m[39m
+    [90m 72| [39m    [34mrender[39m([33m<[39m[33mApp[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 73| [39m
+    [90m 74| [39m    [35mconst[39m textarea [33m=[39m 
+screen[33m.[39m[34mgetByLabelText[39m([36m/Descripci├│n t├®cnica de la [39mÔÇª
+    [90m   | [39m                            [31m^[39m
+    [90m 75| [39m    [35mconst[39m sampleText [33m=[39m
+    [90m 76| [39m      [32m'Error cr├¡tico en el cl├║ster de base de datos principal tras apl[39mÔÇª
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/3]ÔÄ»[22m[39m
+
