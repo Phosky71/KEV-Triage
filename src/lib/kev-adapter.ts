@@ -53,6 +53,8 @@ function isDepartmentOption(value: unknown): value is DepartmentOption {
   return typeof value === 'string' && (VALID_DEPARTMENTS as readonly string[]).includes(value);
 }
 
+const SUM_TOLERANCE = 0.02; // inclusivo: |sum-1| <= SUM_TOLERANCE + 1e-9
+
 function isSeverityLevel(value: unknown): value is SeverityLevel {
   return typeof value === 'string' && (ORDERED_SEVERITIES as readonly string[]).includes(value);
 }
@@ -93,22 +95,13 @@ function extractQuestionNode(
  * Adapta y valida la pregunta A: `department` (tipo `choice`).
  */
 function parseDepartmentNode(node: Record<string, unknown>): DepartmentClassification {
-  const rawChoice = node.choice ?? node.answer ?? node.value ?? node.selected;
-
-  if (!isDepartmentOption(rawChoice)) {
-    throw new KevValidationError(
-      'El campo "department" devuelto por Kev no corresponde a ninguna opción válida (frontend, backend, billing, devops).',
-      `Valor recibido en department: ${JSON.stringify(rawChoice)}`
-    );
-  }
-
   const rawProbs = node.probabilities ?? node.distribution ?? node.probs ?? node.scores;
   let probabilities: Partial<Record<DepartmentOption, number>> | undefined;
 
   if (isRecord(rawProbs)) {
     const parsedProbs: Partial<Record<DepartmentOption, number>> = {};
     for (const dept of VALID_DEPARTMENTS) {
-      const val = rawProbs[dept];
+      const val = (rawProbs as Record<string, unknown>)[dept];
       if (val !== undefined) {
         if (!isValidProbability(val)) {
           throw new KevValidationError(
@@ -116,7 +109,7 @@ function parseDepartmentNode(node: Record<string, unknown>): DepartmentClassific
             `Se esperaba número en [0, 1], se recibió: ${JSON.stringify(val)}`
           );
         }
-        parsedProbs[dept] = val;
+        parsedProbs[dept] = val as number;
       }
     }
     if (Object.keys(parsedProbs).length > 0) {
@@ -124,38 +117,138 @@ function parseDepartmentNode(node: Record<string, unknown>): DepartmentClassific
     }
   }
 
-  const explicitConfidence = node.confidence ?? node.probability ?? node.prob;
-
-  if (explicitConfidence !== undefined) {
-    if (!isValidProbability(explicitConfidence)) {
+  // Validar suma con tolerancia inclusiva si hay >= 2 opciones
+  if (probabilities && Object.keys(probabilities).length >= 2) {
+    let sum = 0;
+    for (const dept of VALID_DEPARTMENTS) {
+      const v = probabilities[dept];
+      if (typeof v === 'number') sum += v;
+    }
+    if (Math.abs(sum - 1.0) > SUM_TOLERANCE + 1e-9) {
       throw new KevValidationError(
-        'La confianza declarada para "department" está fuera del rango válido [0, 1].',
-        `Valor recibido: ${JSON.stringify(explicitConfidence)}`
+        'Suma de probabilidades de "department" fuera de tolerancia.',
+        `Suma recibida: ${sum}`
       );
     }
-    return {
-      selected: rawChoice,
-      confidence: explicitConfidence,
-      confidenceSource: 'explicit_protocol',
-      probabilities,
-    };
   }
 
-  // Si no viene un campo `confidence` separado pero sí la distribución de probabilidades de las opciones,
-  // la probabilidad asignada a la opción seleccionada está matemáticamente justificada.
-  const selectedProb = probabilities?.[rawChoice];
-  if (isValidProbability(selectedProb)) {
-    return {
-      selected: rawChoice,
-      confidence: selectedProb,
-      confidenceSource: 'winning_option_probability',
-      probabilities,
-    };
+  const rawChoice = node.choice ?? node.answer ?? node.value ?? node.selected;
+  const explicitConfidence = node.confidence ?? node.probability ?? node.prob;
+
+  // Si hay distribución y choice no coincide con ninguna opción con prob o hay empate
+  if (probabilities && Object.keys(probabilities).length >= 2) {
+    const entries = (Object.entries(probabilities) as Array<[DepartmentOption, number]>).filter(
+      ([, v]) => typeof v === 'number'
+    );
+    if (entries.length >= 2) {
+      const maxProb = Math.max(...entries.map(([, v]) => v));
+      const winners = entries.filter(([, v]) => v >= maxProb - 1e-9);
+      // empate dentro de ε
+      if (winners.length >= 2) {
+        if (explicitConfidence !== undefined) {
+          if (!isValidProbability(explicitConfidence)) {
+            throw new KevValidationError(
+              'La confianza declarada para "department" está fuera del rango válido [0, 1].',
+              `Valor recibido: ${JSON.stringify(explicitConfidence)}`
+            );
+          }
+          // empate con confidence explícita -> propuesto como INVALID_SCHEMA (campos contradictorios)
+          throw new KevValidationError(
+            'Campos contradictorios en "department": empate con confidence explícita.',
+            `Nodo department recibido: ${JSON.stringify(node)}`
+          );
+        }
+        return {
+          selected: null,
+          confidence: maxProb,
+          confidenceSource: 'ambiguous',
+          probabilities,
+        };
+      }
+    }
+  }
+
+  if (isDepartmentOption(rawChoice)) {
+    // choice debe coincidir con lo indicado por probs si hay probs
+    if (probabilities) {
+      const choiceProb = probabilities[rawChoice];
+      if (typeof choiceProb === 'number') {
+        // verificar que no hay ganador distinto con mayor prob fuera de ε
+        const entries = (Object.entries(probabilities) as Array<[DepartmentOption, number]>).filter(
+          ([, v]) => typeof v === 'number'
+        );
+        if (entries.length >= 2) {
+          const maxProb = Math.max(...entries.map(([, v]) => v));
+          if (choiceProb < maxProb - 1e-9) {
+            throw new KevValidationError(
+              'El campo "department" devuelto por Kev no corresponde a ninguna opción válida (frontend, backend, billing, devops).',
+              `Valor recibido en department: ${JSON.stringify(rawChoice)}`
+            );
+          }
+        }
+      }
+    }
+
+    if (explicitConfidence !== undefined) {
+      if (!isValidProbability(explicitConfidence)) {
+        throw new KevValidationError(
+          'La confianza declarada para "department" está fuera del rango válido [0, 1].',
+          `Valor recibido: ${JSON.stringify(explicitConfidence)}`
+        );
+      }
+      return {
+        selected: rawChoice,
+        confidence: explicitConfidence,
+        confidenceSource: 'explicit_protocol',
+        probabilities,
+      };
+    }
+
+    const selectedProb = probabilities?.[rawChoice];
+    if (isValidProbability(selectedProb)) {
+      return {
+        selected: rawChoice,
+        confidence: selectedProb,
+        confidenceSource: 'winning_option_probability',
+        probabilities,
+      };
+    }
+
+    throw new KevValidationError(
+      'No se pudo determinar la confianza de "department": el protocolo no devolvió ni confianza explícita ni probabilidad para la opción seleccionada.',
+      `Nodo department recibido: ${JSON.stringify(node)}`
+    );
+  }
+
+  // sin choice, solo distribución
+  if (probabilities && Object.keys(probabilities).length >= 2) {
+    const entries = (Object.entries(probabilities) as Array<[DepartmentOption, number]>).filter(
+      ([, v]) => typeof v === 'number'
+    );
+    if (entries.length >= 2) {
+      const maxProb = Math.max(...entries.map(([, v]) => v));
+      const winners = entries.filter(([, v]) => v >= maxProb - 1e-9);
+      if (winners.length >= 2) {
+        return {
+          selected: null,
+          confidence: maxProb,
+          confidenceSource: 'ambiguous',
+          probabilities,
+        };
+      }
+      const winner = winners[0]![0];
+      return {
+        selected: winner,
+        confidence: maxProb,
+        confidenceSource: 'winning_option_probability',
+        probabilities,
+      };
+    }
   }
 
   throw new KevValidationError(
-    'No se pudo determinar la confianza de "department": el protocolo no devolvió ni confianza explícita ni probabilidad para la opción seleccionada.',
-    `Nodo department recibido: ${JSON.stringify(node)}`
+    'El campo "department" devuelto por Kev no corresponde a ninguna opción válida (frontend, backend, billing, devops).',
+    `Valor recibido en department: ${JSON.stringify(rawChoice)}`
   );
 }
 
@@ -165,7 +258,7 @@ function parseDepartmentNode(node: Record<string, unknown>): DepartmentClassific
  * índice base 0 (0..4) si viene explícitamente indicado como index, o nivel ordinal 1..5.
  */
 function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
-  const levelKeys = ['level', 'label', 'choice', 'answer', 'value'] as const;
+  const levelKeys = ['level', 'label', 'choice', 'answer', 'value', 'severity', 'status'] as const;
   const levelCandidates: Array<{ key: string; level: SeverityLevel }> = [];
   for (const k of levelKeys) {
     if (Object.prototype.hasOwnProperty.call(node, k)) {

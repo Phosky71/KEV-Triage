@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { App } from '../App';
 
 describe('Integración de interfaz Kev Triage (App.tsx)', () => {
@@ -138,5 +139,70 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
 
     fetchSpy.mockRestore();
     vi.unstubAllEnvs();
+  });
+
+  describe('KT-005: UI ambigüedad departamento', () => {
+    it('KT-005: muestra "Ambiguo, revisión humana" y modo human_review', async () => {
+      const user = userEvent.setup();
+      const response = {
+        answers: {
+          department: { probabilities: { backend: 0.5, frontend: 0.5 } },
+          severity: { level: 'high' },
+          is_security_leak: { affirmative_probability: 0.1 },
+        },
+      };
+
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        json: async () => response,
+      } as Response);
+
+      vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
+
+      render(<App />);
+      const textarea = screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i });
+      await user.clear(textarea);
+      fireEvent.change(textarea, { target: { value: JSON.stringify(response) } });
+      await user.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
+
+      expect(await screen.findByText(/Ambiguo, revisión humana/i)).toBeInTheDocument();
+      expect(await screen.findAllByText(/Revisión Humana Requerida/i)).toHaveLength(2);
+      expect(screen.queryByText(/Backend & Servicios de API/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Frontend & Experiencia de Usuario/i)).not.toBeInTheDocument();
+
+      fetchSpy.mockRestore();
+      vi.unstubAllEnvs();
+    });
+
+    it('KT-005: empate + is_security_leak > 0.70 muestra alerta de seguridad y estado ambiguo', async () => {
+      const user = userEvent.setup();
+      const response = {
+        answers: {
+          department: { probabilities: { backend: 0.5, frontend: 0.5 } },
+          severity: { level: 'high' },
+          is_security_leak: { affirmative_probability: 0.95 },
+        },
+      };
+
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        json: async () => response,
+      } as Response);
+
+      vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
+
+      render(<App />);
+      const textarea = screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i });
+      await user.clear(textarea);
+      fireEvent.change(textarea, { target: { value: JSON.stringify(response) } });
+      await user.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
+
+      expect(await screen.findByText(/Ambiguo, revisión humana/i)).toBeInTheDocument();
+      expect(await screen.findByText(/Alerta de Seguridad Prioritaria/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Backend & Servicios de API/i)).not.toBeInTheDocument();
+
+      fetchSpy.mockRestore();
+      vi.unstubAllEnvs();
+    });
   });
 });

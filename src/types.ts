@@ -53,13 +53,13 @@ export interface KevSystemOneRequest {
  * Modelo interno normalizado y validado tras pasar por kev-adapter.ts
  */
 export interface DepartmentClassification {
-  selected: DepartmentOption;
+  selected: DepartmentOption | null;
   /**
    * Confianza de la clasificación en rango [0, 1].
    * Documentación de origen en `confidenceSource`.
    */
   confidence: number;
-  confidenceSource: 'explicit_protocol' | 'winning_option_probability';
+  confidenceSource: 'explicit_protocol' | 'winning_option_probability' | 'ambiguous';
   probabilities?: Partial<Record<DepartmentOption, number>>;
 }
 
@@ -124,7 +124,7 @@ export interface SecurityAlertDecision {
 
 export interface DepartmentRoutingDecision {
   mode: RoutingMode;
-  targetDepartment: DepartmentOption;
+  targetDepartment: DepartmentOption | null;
   confidence: number;
   threshold: number;
   title: string;

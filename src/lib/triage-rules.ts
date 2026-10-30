@@ -66,9 +66,20 @@ export function evaluateSecurityRule(affirmativeProbability: number): SecurityAl
  * - Si confidence <= 0.85: exige revisión humana.
  */
 export function evaluateDepartmentRoutingRule(
-  department: DepartmentOption,
+  department: DepartmentOption | null,
   confidence: number
 ): DepartmentRoutingDecision {
+  if (department === null) {
+    return {
+      mode: 'human_review',
+      targetDepartment: null,
+      confidence,
+      threshold: AUTO_ASSIGN_CONFIDENCE_THRESHOLD,
+      title: 'Revisión Humana Requerida por ambigüedad en departamento',
+      explanation: `La clasificación de departamento es ambigua (empate o distribución sin ganador claro). Se requiere revisión humana antes de asignar.`,
+    };
+  }
+
   const isAutoAssignable = confidence > AUTO_ASSIGN_CONFIDENCE_THRESHOLD;
   const deptName = DEPARTMENT_LABELS[department];
 

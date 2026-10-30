@@ -4,9 +4,9 @@ import { DEPARTMENT_LABELS, AUTO_ASSIGN_CONFIDENCE_THRESHOLD } from '../lib/tria
 
 interface ConfidenceIndicatorProps {
   confidence: number;
-  confidenceSource: 'explicit_protocol' | 'winning_option_probability';
+  confidenceSource: 'explicit_protocol' | 'winning_option_probability' | 'ambiguous';
   probabilities?: Partial<Record<DepartmentOption, number>>;
-  selectedDepartment: DepartmentOption;
+  selectedDepartment: DepartmentOption | null;
 }
 
 export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
@@ -69,7 +69,7 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
       </div>
 
       {/* Distribución de probabilidades por opción (si el protocolo la incluye) */}
-      {sortedProbabilities && sortedProbabilities.length > 0 && (
+      {selectedDepartment && sortedProbabilities && sortedProbabilities.length > 0 && (
         <div className="pt-2 border-t border-zinc-800/80 space-y-2">
           <span className="block text-[11px] font-medium uppercase tracking-wider text-zinc-400">
             Distribución de probabilidades (`choice`)

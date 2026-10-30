@@ -58,6 +58,7 @@ Confianza: `confidence`, `probability`, `prob` (explícita)
 #### Severity (score)
 Campos buscados: `level`, `label`, `choice`, `answer`, `value`  
 Soporta: nivel semántico, `index` (0-4), `score` numérico (1-5, 0→low)  
+Adicionalmente admite `severity`, `status` como claves alternativas para el campo semántico; `index`/`score` se evalúan por separado con validación estricta de enteros.  
 Probabilidades opcionales por nivel, confianza opcional
 
 #### Security leak (noul)

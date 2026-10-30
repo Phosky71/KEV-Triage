@@ -288,12 +288,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               Departamento Predicho (`choice`)
             </span>
             <span className="font-mono text-xs rounded bg-zinc-800 px-2 py-0.5 text-zinc-200">
-              {result.department.selected}
+              {result.department.selected ?? '—'}
             </span>
           </div>
 
           <div className="text-base font-semibold text-zinc-100">
-            {DEPARTMENT_LABELS[result.department.selected]}
+            {result.department.selected ? DEPARTMENT_LABELS[result.department.selected] : 'Ambiguo, revisión humana'}
           </div>
 
           <ConfidenceIndicator
