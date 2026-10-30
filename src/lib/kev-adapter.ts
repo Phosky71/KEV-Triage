@@ -173,9 +173,9 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
       if (isSeverityLevel(v)) {
         levelCandidates.push({ key: k, level: v });
       } else if (typeof v === 'string') {
-        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
       } else {
-        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
       }
     }
   }
@@ -184,39 +184,39 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
   if (Object.prototype.hasOwnProperty.call(node, 'index')) {
     const v = node.index;
     if (typeof v !== 'number' || !Number.isInteger(v) || Number.isNaN(v)) {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
     if (v < 0 || v > 4) {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
     const byIndex = ORDERED_SEVERITIES[v];
     if (!byIndex) {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
     numericSources.push({ key: 'index', kind: 'index', level: byIndex });
   }
   if (Object.prototype.hasOwnProperty.call(node, 'score')) {
     const v = node.score;
     if (typeof v !== 'number' || !Number.isInteger(v) || Number.isNaN(v)) {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
     if (v === 0) {
       numericSources.push({ key: 'score', kind: 'score', level: 'low' });
     } else if (v >= 1 && v <= 5) {
       const byScore = ORDERED_SEVERITIES[v - 1];
       if (!byScore) {
-        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
       }
       numericSources.push({ key: 'score', kind: 'score', level: byScore });
     } else {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
   }
 
   const allCandidates = [...levelCandidates, ...numericSources];
   if (allCandidates.length === 0) {
     throw new KevValidationError(
-      'No fue posible interpretar el nivel de "severity" devuelto por Kev.',
+      INVALID_SCHEMA_MSG_SEVERITY,
       `Se esperaba uno de [${ORDERED_SEVERITIES.join(', ')}] o puntuación 1-5. Recibido: ${JSON.stringify(node)}`
     );
   }
@@ -224,7 +224,7 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
   const firstLevel = allCandidates[0]!.level;
   for (let i = 1; i < allCandidates.length; i++) {
     if (allCandidates[i]!.level !== firstLevel) {
-      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SEVERITY, `Nodo recibido: ${JSON.stringify(node)}`);
     }
   }
 
@@ -273,6 +273,9 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
 
 const INVALID_SCHEMA_MSG_SECURITY =
   'Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga.';
+
+const INVALID_SCHEMA_MSG_SEVERITY =
+  'Esquema de respuesta de Kev inválido para el campo "severity". Revise el formato o consistencia de los valores.';
 
 function isRecognizedAnswerValue(val: unknown): val is boolean | string {
   if (typeof val === 'boolean') return true;

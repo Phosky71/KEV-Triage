@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { adaptKevResponse, KevValidationError } from '../lib/kev-adapter';
 
 const INVALID_SCHEMA_MSG = 'Esquema de respuesta de Kev inválido. Se requiere revisión manual de la posible fuga.';
+const INVALID_SCHEMA_MSG_SEVERITY =
+  'Esquema de respuesta de Kev inválido para el campo "severity". Revise el formato o consistencia de los valores.';
 
 describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
   it('lanza KevValidationError controlado si falta un campo obligatorio o la probabilidad es inválida', () => {
@@ -137,7 +139,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
         expect(e.diagnostics).toBeTruthy();
       }
     });
@@ -148,7 +150,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -158,7 +160,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -168,7 +170,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -178,7 +180,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -188,7 +190,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -198,7 +200,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -208,7 +210,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -218,7 +220,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -228,7 +230,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -238,7 +240,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -248,7 +250,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
@@ -258,7 +260,7 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
         throw new Error('should fail');
       } catch (e: any) {
         expect(e).toBeInstanceOf(KevValidationError);
-        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG_SEVERITY);
       }
     });
 
