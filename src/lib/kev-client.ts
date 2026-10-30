@@ -172,21 +172,39 @@ export async function analyzeIncidentWithKev(
 
   const payload = buildSystemOnePayload(options.incidentText, modelName);
 
-  const timeoutController = new AbortController();
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   let didTimeout = false;
 
+  // Comprobar signal ya abortada al empezar
+  if (options.signal?.aborted) {
+    throw new DOMException('Petición cancelada', 'AbortError');
+  }
+
+  const timeoutController = new AbortController();
   const timer = setTimeout(() => {
     didTimeout = true;
-    timeoutController.abort();
+    timeoutController.abort(new DOMException('Timeout', 'TimeoutError'));
   }, timeoutMs);
 
-  const onExternalAbort = () => timeoutController.abort();
+  // Combinar signals si es posible
+  let combinedSignal: AbortSignal = timeoutController.signal;
   if (options.signal) {
-    if (options.signal.aborted) {
-      clearTimeout(timer);
-      throw new DOMException('Petición cancelada por el usuario.', 'AbortError');
+    if (typeof AbortSignal.any === 'function') {
+      try {
+        combinedSignal = AbortSignal.any([options.signal, timeoutController.signal]);
+      } catch {
+        combinedSignal = timeoutController.signal;
+      }
     }
+    // Fallback: escuchar signal externo
+  }
+
+  const onExternalAbort = () => {
+    if (!timeoutController.signal.aborted) {
+      timeoutController.abort(options.signal?.reason);
+    }
+  };
+  if (options.signal && typeof AbortSignal.any !== 'function') {
     options.signal.addEventListener('abort', onExternalAbort, { once: true });
   }
 
@@ -200,7 +218,7 @@ export async function analyzeIncidentWithKev(
         Accept: 'application/json',
       },
       body: JSON.stringify(payload),
-      signal: timeoutController.signal,
+      signal: combinedSignal,
     });
 
     const clientRoundTripMs = Math.round(performance.now() - startTime);
@@ -250,7 +268,24 @@ export async function analyzeIncidentWithKev(
       throw err;
     }
 
+    // Abort manual externo (sin timeout) -> re-lanzar AbortError sin envolver
     if (options.signal?.aborted && !didTimeout) {
+      throw new DOMException('Petición cancelada', 'AbortError');
+    }
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      // Si fue por signal externo y no por timeout
+      if (options.signal?.aborted && !didTimeout) {
+        throw new DOMException('Petición cancelada', 'AbortError');
+      }
+      if (didTimeout) {
+        throw new KevClientException({
+          code: 'TIMEOUT_ERROR',
+          title: 'Tiempo de espera agotado',
+          message: `El servicio de Kev no respondió dentro del límite de ${(timeoutMs / 1000).toFixed(0)} segundos. Si utiliza un despliegue serverless en frío (cold start en GPU), vuelva a intentarlo.`,
+          diagnostics: `Timeout de ${timeoutMs}ms excedido en POST ${endpoint}`,
+        });
+      }
+      // Por defecto, si es abort sin timeout conocido, propagar como AbortError
       throw new DOMException('Petición cancelada', 'AbortError');
     }
 
@@ -258,7 +293,7 @@ export async function analyzeIncidentWithKev(
       throw new KevClientException({
         code: 'TIMEOUT_ERROR',
         title: 'Tiempo de espera agotado',
-        message: `El servicio de Kev no respondió dentro del límite de ${(timeoutMs / 1000).toFixed(0)} segundos.Si utiliza un despliegue serverless en frío (cold start en GPU), vuelva a intentarlo.`,
+        message: `El servicio de Kev no respondió dentro del límite de ${(timeoutMs / 1000).toFixed(0)} segundos. Si utiliza un despliegue serverless en frío (cold start en GPU), vuelva a intentarlo.`,
         diagnostics: `Timeout de ${timeoutMs}ms excedido en POST ${endpoint}`,
       });
     }
@@ -272,7 +307,7 @@ export async function analyzeIncidentWithKev(
     });
   } finally {
     clearTimeout(timer);
-    if (options.signal) {
+    if (options.signal && typeof AbortSignal.any !== 'function') {
       options.signal.removeEventListener('abort', onExternalAbort);
     }
   }
