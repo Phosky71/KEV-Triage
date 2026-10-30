@@ -1,6 +1,6 @@
 # ADR-004: Validación estricta del adaptador Kev
 
-- Estado: Propuesto
+- Estado: Aceptado (decisión 2 pendiente de implementación)
 - Fecha: 2026-10-30
 - Autores: Auditoría Kev Triage
 - Relacionado con: ADR-001 (arquitectura por capas), ADR-002 (reglas deterministas con umbrales >0.70/>0.85)
