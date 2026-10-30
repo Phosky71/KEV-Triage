@@ -83,7 +83,9 @@
     "Evidencia": "Revisión de código",
     "Impacto": "Falso positivo/negativo en detección de filtración",
     "CorreccionRecomendada": "Simplificar y validar consistencia",
-    "Esfuerzo": "M"
+    "Esfuerzo": "M",
+    "estado": "corregido",
+    "commit": "60aee36"
   },
   {
     "ID": "KT-008",
@@ -271,5 +273,29 @@
     "Impacto": "Ninguno",
     "CorreccionRecomendada": "OK",
     "Esfuerzo": "S"
+  },
+  {
+    "ID": "KT-025",
+    "Severidad": "Alta",
+    "Área": "Adaptador",
+    "ArchivoLínea": "src/lib/kev-adapter.ts:332-380",
+    "Descripción": "Cambio estructural pendiente: parsear preguntas por separado para evaluar is_security_leak independientemente (invariante ADR-002) sin construir resultado completo si otras preguntas fallan/son ambiguas",
+    "Evidencia": "ADR-004 invariante",
+    "Impacto": "Alerta de seguridad podría ocultarse en caso de fallo de otras preguntas",
+    "CorreccionRecomendada": "Refactorizar adaptador para parseo independiente por pregunta",
+    "Esfuerzo": "M",
+    "estado": "pendiente"
+  },
+  {
+    "ID": "KT-026",
+    "Severidad": "Info/Baja",
+    "Área": "Proxy",
+    "ArchivoLínea": "server/proxy.mjs:5",
+    "Descripción": "KEV_UPSTREAM_URL sin validar esquema http/https (configuración del operador, no manipulada por ruta/cabeceras)",
+    "Evidencia": "Revisión de código y tests",
+    "Impacto": "Configuración potencialmente incorrecta",
+    "CorreccionRecomendada": "Validar esquema al arrancar o documentar restricciones",
+    "Esfuerzo": "S",
+    "estado": "pendiente"
   }
 ]
