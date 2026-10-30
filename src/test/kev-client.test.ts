@@ -31,10 +31,12 @@ describe('Cliente Kev (KT-008 / KT-009)', () => {
     );
   });
 
-  it('KT-008: credenciales, fragmento, query -> UNCONFIGURED_SERVICE', () => {
-    expect(isServiceUrlConfigured('http://user:pass@host.com/api')).toBe(false);
-    expect(isServiceUrlConfigured('http://localhost:8787/api#frag')).toBe(false);
-    expect(isServiceUrlConfigured('http://localhost:8787/api?x=1')).toBe(false);
+  it.each([
+    ['credenciales', 'http://user:pass@host.com/api'],
+    ['fragmento', 'http://localhost:8787/api#frag'],
+    ['query', 'http://localhost:8787/api?x=1'],
+  ])('KT-008: %s -> UNCONFIGURED_SERVICE', (_name, url) => {
+    expect(isServiceUrlConfigured(url)).toBe(false);
   });
 
   it('KT-008: esquemas no http/https rechazados', () => {

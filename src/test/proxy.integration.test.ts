@@ -70,18 +70,18 @@ describe('Proxy integración (arnés)', () => {
   });
 
   it('KT-018: upstream lento -> 504 en tiempo configurado', async () => {
-    const slow: any = http.createServer(() => {
+    const slow = http.createServer(() => {
       // no responde
     });
-    await new Promise((r: any) => (slow as any).listen(0, '127.0.0.1', r));
+    await new Promise<void>((r) => slow.listen(0, '127.0.0.1', () => r()));
     const slowPort = getPort(slow);
-    const p2: any = (createProxyServer as any)({ port: 0, kevUpstreamUrl: `http://127.0.0.1:${slowPort}`, allowedOrigin: 'http://localhost:5173', upstreamTimeoutMs: 100 });
-    await new Promise((r: any) => (p2 as any).listen(0, '127.0.0.1', r));
+    const p2 = createProxyServer({ port: 0, kevUpstreamUrl: `http://127.0.0.1:${slowPort}`, allowedOrigin: 'http://localhost:5173', upstreamTimeoutMs: 100 });
+    await new Promise<void>((r) => p2.listen(0, '127.0.0.1', () => r()));
     const p2Port = getPort(p2);
     const res = await fetch(`http://127.0.0.1:${p2Port}/api/kev/v1/systemone`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     expect(res.status).toBe(504);
-    await new Promise((r) => p2.close(r));
-    await new Promise((r: any) => (slow as any).close(() => r()));
+    await new Promise<void>((r) => p2.close(() => r()));
+    await new Promise<void>((r) => slow.close(() => r()));
   }, 10000);
 
   it('upstream caído -> 502', async () => {
