@@ -2,6 +2,7 @@ import http from 'node:http';
 
 const DEFAULT_PORT = 8787;
 const DEFAULT_MAX_BODY_BYTES = 32 * 1024; // 32 KB máximo para evitar abuso
+const DEFAULT_UPSTREAM_TIMEOUT_MS = 10000; // menor que DEFAULT_TIMEOUT_MS del cliente (15000)
 
 function normalizeAllowedOrigins(value) {
   if (!value) return [];
@@ -28,6 +29,7 @@ export function createProxyServer(config = {}) {
   const ALLOWED_ORIGIN = config.allowedOrigin ?? process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173';
   const allowedOrigins = normalizeAllowedOrigins(ALLOWED_ORIGIN);
   const MAX_BODY_BYTES = Number(config.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES);
+  const UPSTREAM_TIMEOUT_MS = Number(config.upstreamTimeoutMs ?? process.env.UPSTREAM_TIMEOUT_MS ?? DEFAULT_UPSTREAM_TIMEOUT_MS);
 
   const server = http.createServer(async (req, res) => {
     const origin = req.headers.origin;
@@ -137,13 +139,29 @@ export function createProxyServer(config = {}) {
       headers.Authorization = `Bearer ${KEV_API_KEY}`;
     }
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(new Error('UPSTREAM_TIMEOUT')), UPSTREAM_TIMEOUT_MS);
+    let clientAborted = false;
+    const onClose = () => {
+      if (!res.writableEnded) {
+        clientAborted = true;
+        try {
+          controller.abort(new Error('CLIENT_ABORT'));
+        } catch {}
+      }
+    };
+    req.on('close', onClose);
+
     try {
       const upstreamResponse = await fetch(upstreamEndpoint, {
         method: 'POST',
         headers,
         body,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeout);
+      req.off('close', onClose);
       const responseText = await upstreamResponse.text();
       if (origin && allowedOrigins.length > 0 && isOriginAllowed(origin, allowedOrigins)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -154,11 +172,15 @@ export function createProxyServer(config = {}) {
       if (origin) {
         res.setHeader('Vary', 'Origin');
       }
+      if (res.writableEnded) return;
       res.writeHead(upstreamResponse.status, {
         'Content-Type': 'application/json; charset=utf-8',
       });
       res.end(responseText);
-    } catch {
+    } catch (err) {
+      clearTimeout(timeout);
+      req.off('close', onClose);
+      if (res.writableEnded) return;
       // Nunca registramos ni devolvemos KEV_API_KEY ni el contenido sensible de la incidencia
       if (origin && allowedOrigins.length > 0 && isOriginAllowed(origin, allowedOrigins)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -168,6 +190,11 @@ export function createProxyServer(config = {}) {
       }
       if (origin) {
         res.setHeader('Vary', 'Origin');
+      }
+      if (err && err.name === 'AbortError') {
+        res.writeHead(504, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Tiempo de espera agotado con el servicio upstream.' }));
+        return;
       }
       res.writeHead(502, { 'Content-Type': 'application/json' });
       res.end(

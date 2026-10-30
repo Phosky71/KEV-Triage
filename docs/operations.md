@@ -34,6 +34,7 @@ Los archivos estáticos se generan en `dist/`. El proxy (`server/proxy.mjs`) deb
 | `KEV_UPSTREAM_URL` | Sí | - | URL base o completa del upstream Kev |
 | `KEV_API_KEY` | No | - | API key, se añade como `Bearer` si existe |
 | `ALLOWED_ORIGIN` | No | `http://localhost:5173` | Lista separada por comas de orígenes permitidos para CORS. Orígenes no permitidos reciben 403 sin ACAO. Peticiones sin Origin permitidas. |
+| `UPSTREAM_TIMEOUT_MS` | No | `10000` | Timeout hacia upstream (debe ser menor que el timeout del cliente `DEFAULT_TIMEOUT_MS` 15000). Al vencer → 504 y se cancela la petición al upstream. |
 
 ## Despliegue
 
