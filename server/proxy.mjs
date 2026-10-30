@@ -140,11 +140,15 @@ export function createProxyServer(config = {}) {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(new Error('UPSTREAM_TIMEOUT')), UPSTREAM_TIMEOUT_MS);
-    let clientAborted = false;
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      try {
+        controller.abort(new Error('UPSTREAM_TIMEOUT'));
+      } catch {}
+    }, UPSTREAM_TIMEOUT_MS);
     const onClose = () => {
       if (!res.writableEnded) {
-        clientAborted = true;
         try {
           controller.abort(new Error('CLIENT_ABORT'));
         } catch {}
@@ -192,6 +196,11 @@ export function createProxyServer(config = {}) {
         res.setHeader('Vary', 'Origin');
       }
       if (err && err.name === 'AbortError') {
+        res.writeHead(504, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Tiempo de espera agotado con el servicio upstream.' }));
+        return;
+      }
+      if (timedOut) {
         res.writeHead(504, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Tiempo de espera agotado con el servicio upstream.' }));
         return;

@@ -69,7 +69,7 @@ describe('Proxy integración (arnés)', () => {
     expect(res.status).toBe(413);
   });
 
-  it.fails('KT-018: upstream lento -> 504 en tiempo configurado', async () => {
+  it('KT-018: upstream lento -> 504 en tiempo configurado', async () => {
     const slow = http.createServer(() => {
       // no responde
     });
