@@ -78,4 +78,212 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
     expect(() => adaptKevResponse({ ...base, answers: { ...base.answers, is_security_leak: { answer: 'maybe', p_yes: 0.9 } } }, { clientRoundTripMs: 10 })).toThrowError(KevValidationError);
     expect(() => adaptKevResponse({ ...base, answers: { ...base.answers, is_security_leak: { answer: '', p_yes: 0.9 } } }, { clientRoundTripMs: 10 })).toThrowError(KevValidationError);
   });
+
+  describe('KT-006: severidad', () => {
+    const baseDept = { department: { choice: 'backend', confidence: 0.9 } };
+    const baseSec = { is_security_leak: { affirmative_probability: 0.1 } };
+
+    it('KT-006: solo level "high" -> high/ordinal 3', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { level: 'high' }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('high');
+      expect(res.severity.ordinal).toBe(3);
+    });
+
+    it('KT-006: solo index 0 -> low/ordinal 1', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { index: 0 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('low');
+      expect(res.severity.ordinal).toBe(1);
+    });
+
+    it('KT-006: solo index 4 -> emergency/ordinal 5', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { index: 4 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('emergency');
+      expect(res.severity.ordinal).toBe(5);
+    });
+
+    it('KT-006: solo score 1 -> low/ordinal 1', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { score: 1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('low');
+      expect(res.severity.ordinal).toBe(1);
+    });
+
+    it('KT-006: solo score 0 -> low/ordinal 1', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { score: 0 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('low');
+      expect(res.severity.ordinal).toBe(1);
+    });
+
+    it('KT-006: solo score 5 -> emergency/ordinal 5', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { score: 5 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('emergency');
+      expect(res.severity.ordinal).toBe(5);
+    });
+
+    it('KT-006: index 0 + score 1 consistentes -> low', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { index: 0, score: 1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('low');
+      expect(res.severity.ordinal).toBe(1);
+    });
+
+    it('KT-006: level "high" + index 2 + score 3 consistentes -> high', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { level: 'high', index: 2, score: 3 }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('high');
+      expect(res.severity.ordinal).toBe(3);
+    });
+
+    it('KT-006: index 0 + score 3 contradictorios -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { index: 0, score: 3 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+        expect(e.diagnostics).toBeTruthy();
+      }
+    });
+
+    it('KT-006: level "high" + index 0 contradictorios -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { level: 'high', index: 0 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: level "high" + label "low" contradictorios -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { level: 'high', label: 'low' }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: score 0 + index 1 contradictorios -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { score: 0, index: 1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: varios campos contradictorios -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { level: 'critical', score: 1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: score fuera de rango 6 -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { score: 6 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: score fuera de rango -1 -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { score: -1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: index fuera de rango 5 -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { index: 5 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: index fuera de rango -1 -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { index: -1 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: score 2.5 no entero -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { score: 2.5 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: index 1.5 no entero -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { index: 1.5 }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: score "2" como cadena -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { score: '2' }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: level "severe" inválido -> INVALID_SCHEMA', () => {
+      try {
+        adaptKevResponse({ answers: { ...baseDept, severity: { level: 'severe' }, ...baseSec } }, { clientRoundTripMs: 10 });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+        expect(e.message).toBe(INVALID_SCHEMA_MSG);
+      }
+    });
+
+    it('KT-006: alias label -> válido', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { label: 'moderate' }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('moderate');
+      expect(res.severity.ordinal).toBe(2);
+    });
+
+    it('KT-006: alias choice -> válido', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { choice: 'critical' }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('critical');
+      expect(res.severity.ordinal).toBe(4);
+    });
+
+    it('KT-006: alias answer -> válido', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { answer: 'emergency' }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('emergency');
+      expect(res.severity.ordinal).toBe(5);
+    });
+
+    it('KT-006: alias value -> válido', () => {
+      const res = adaptKevResponse({ answers: { ...baseDept, severity: { value: 'low' }, ...baseSec } }, { clientRoundTripMs: 10 });
+      expect(res.severity.level).toBe('low');
+      expect(res.severity.ordinal).toBe(1);
+    });
+  });
 });

@@ -165,37 +165,74 @@ function parseDepartmentNode(node: Record<string, unknown>): DepartmentClassific
  * índice base 0 (0..4) si viene explícitamente indicado como index, o nivel ordinal 1..5.
  */
 function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
-  const rawLevel = node.level ?? node.label ?? node.choice ?? node.answer ?? node.value;
-  const rawScore = node.score ?? node.index ?? node.value ?? rawLevel;
-
-  let resolvedLevel: SeverityLevel | null = null;
-
-  if (isSeverityLevel(rawLevel)) {
-    resolvedLevel = rawLevel;
-  } else if (typeof node.index === 'number' && Number.isInteger(node.index)) {
-    // Índice base 0: 0 -> low, 4 -> emergency
-    const byIndex = ORDERED_SEVERITIES[node.index];
-    if (byIndex) {
-      resolvedLevel = byIndex;
-    }
-  } else if (typeof rawScore === 'number' && Number.isInteger(rawScore)) {
-    // Escala 1..5
-    if (rawScore >= 1 && rawScore <= 5) {
-      resolvedLevel = ORDERED_SEVERITIES[rawScore - 1] ?? null;
-    } else if (rawScore === 0) {
-      resolvedLevel = 'low';
+  const levelKeys = ['level', 'label', 'choice', 'answer', 'value'] as const;
+  const levelCandidates: Array<{ key: string; level: SeverityLevel }> = [];
+  for (const k of levelKeys) {
+    if (Object.prototype.hasOwnProperty.call(node, k)) {
+      const v = (node as Record<string, unknown>)[k];
+      if (isSeverityLevel(v)) {
+        levelCandidates.push({ key: k, level: v });
+      } else if (typeof v === 'string') {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      } else {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      }
     }
   }
 
-  if (!resolvedLevel) {
+  const numericSources: Array<{ key: string; kind: 'index' | 'score'; level: SeverityLevel }> = [];
+  if (Object.prototype.hasOwnProperty.call(node, 'index')) {
+    const v = node.index;
+    if (typeof v !== 'number' || !Number.isInteger(v) || Number.isNaN(v)) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    if (v < 0 || v > 4) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    const byIndex = ORDERED_SEVERITIES[v];
+    if (!byIndex) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    numericSources.push({ key: 'index', kind: 'index', level: byIndex });
+  }
+  if (Object.prototype.hasOwnProperty.call(node, 'score')) {
+    const v = node.score;
+    if (typeof v !== 'number' || !Number.isInteger(v) || Number.isNaN(v)) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+    if (v === 0) {
+      numericSources.push({ key: 'score', kind: 'score', level: 'low' });
+    } else if (v >= 1 && v <= 5) {
+      const byScore = ORDERED_SEVERITIES[v - 1];
+      if (!byScore) {
+        throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+      }
+      numericSources.push({ key: 'score', kind: 'score', level: byScore });
+    } else {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+  }
+
+  const allCandidates = [...levelCandidates, ...numericSources];
+  if (allCandidates.length === 0) {
     throw new KevValidationError(
       'No fue posible interpretar el nivel de "severity" devuelto por Kev.',
       `Se esperaba uno de [${ORDERED_SEVERITIES.join(', ')}] o puntuación 1-5. Recibido: ${JSON.stringify(node)}`
     );
   }
 
+  const firstLevel = allCandidates[0]!.level;
+  for (let i = 1; i < allCandidates.length; i++) {
+    if (allCandidates[i]!.level !== firstLevel) {
+      throw new KevValidationError(INVALID_SCHEMA_MSG_SECURITY, `Nodo recibido: ${JSON.stringify(node)}`);
+    }
+  }
+
+  const resolvedLevel = firstLevel;
   const ordinalIndex = ORDERED_SEVERITIES.indexOf(resolvedLevel);
   const ordinal = (ordinalIndex + 1) as 1 | 2 | 3 | 4 | 5;
+
+  const rawScoreCandidate = node.score ?? node.index ?? node.value ?? resolvedLevel;
 
   const rawProbs = node.probabilities ?? node.distribution ?? node.probs;
   let probabilities: Partial<Record<SeverityLevel, number>> | undefined;
@@ -225,8 +262,8 @@ function parseSeverityNode(node: Record<string, unknown>): SeverityAssessment {
     level: resolvedLevel,
     ordinal,
     rawScore:
-      typeof rawScore === 'number' || typeof rawScore === 'string'
-        ? rawScore
+      typeof rawScoreCandidate === 'number' || typeof rawScoreCandidate === 'string'
+        ? rawScoreCandidate
         : resolvedLevel,
     confidence,
     probabilities,
