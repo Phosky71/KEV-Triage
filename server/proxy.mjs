@@ -81,7 +81,14 @@ export function createProxyServer(config = {}) {
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
 
-    if (req.method !== 'POST' || !req.url?.endsWith('/v1/systemone')) {
+    const url = req.url || '';
+    const pathname = url.split('?')[0];
+    if (pathname !== '/api/kev/v1/systemone') {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Ruta no encontrada. Use POST /api/kev/v1/systemone' }));
+      return;
+    }
+    if (req.method !== 'POST') {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Ruta no encontrada. Use POST /api/kev/v1/systemone' }));
       return;

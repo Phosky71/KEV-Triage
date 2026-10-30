@@ -102,7 +102,7 @@ Todos los errores se envuelven en `KevClientException`.
 ### Comportamiento
 - CORS headers en todas las respuestas
 - `OPTIONS` → 204
-- Solo acepta `POST` a ruta que termine en `/v1/systemone` → 404 si no coincide
+- Solo acepta `POST` a ruta exacta `/api/kev/v1/systemone` (query ignorada, sin barra final). Otras rutas → 404. `/foo/v1/systemone` → 404.
 - Si `KEV_UPSTREAM_URL` no configurada → 503
 - Límite de body → 413 si excede
 - Reenvía request tal cual al upstream, devuelve respuesta con status original
