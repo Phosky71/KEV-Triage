@@ -198,17 +198,6 @@
     "Esfuerzo": "M"
   },
   {
-    "ID": "KT-018",
-    "Severidad": "Media",
-    "Área": "Proxy",
-    "ArchivoLínea": "server/proxy.mjs:62-86",
-    "Descripción": "Sin timeout hacia upstream",
-    "Evidencia": "Revisión de código",
-    "Impacto": "Proxy puede colgar en cold starts",
-    "CorreccionRecomendada": "Añadir AbortController con timeout",
-    "Esfuerzo": "M"
-  },
-  {
     "ID": "KT-019",
     "Severidad": "Media",
     "Área": "Seguridad",
@@ -216,8 +205,9 @@
     "Descripción": "Docs afirman medidas pero faltan Vary:Origin, rate limiting",
     "Evidencia": "Comparación doc vs código",
     "Impacto": "Expectativas incorrectas",
-    "CorreccionRecomendada": "Actualizar docs con limitaciones",
-    "Esfuerzo": "S"
+    "CorreccionRecomendada": "Añadir/clarificar rate limiting en docs",
+    "Esfuerzo": "S",
+    "Descripcion": "Docs afirman medidas pero falta rate limiting (Vary: Origin ya existe)"
   },
   {
     "ID": "KT-020",
@@ -239,18 +229,9 @@
     "Evidencia": "Comparación doc vs código",
     "Impacto": "Confusión para integradores",
     "CorreccionRecomendada": "Clarificar",
-    "Esfuerzo": "S"
-  },
-  {
-    "ID": "KT-022",
-    "Severidad": "Baja",
-    "Área": "Config",
-    "ArchivoLínea": "package.json",
-    "Descripción": "Sin campo engines",
-    "Evidencia": "package.json",
-    "Impacto": "Sin enforcement de versión Node",
-    "CorreccionRecomendada": "Añadir engines",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "revisado-KT-010"
   },
   {
     "ID": "KT-023",
