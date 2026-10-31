@@ -231,8 +231,8 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
       });
       fireEvent.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
       unmount();
-      if (resolveFetch) {
-        resolveFetch(
+      if (typeof resolveFetch === 'function') {
+        (resolveFetch as (value: Response) => void)(
           new Response(JSON.stringify(response), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
@@ -249,13 +249,9 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
   describe('KT-013: cambio a demo durante petición', () => {
     it('KT-013: activar modo demo con petición en curso cancela y limpia estados', async () => {
       vi.useFakeTimers();
-      let resolveFetch: ((value: Response) => void) | undefined;
       vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
       const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
-        () =>
-          new Promise<Response>((resolve) => {
-            resolveFetch = resolve;
-          })
+        () => new Promise<Response>(() => {})
       );
 
       render(<App />);

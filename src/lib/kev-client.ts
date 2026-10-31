@@ -224,12 +224,24 @@ export async function analyzeIncidentWithKev(
     const clientRoundTripMs = Math.round(performance.now() - startTime);
 
     if (!response.ok) {
+      let errorBody: string | undefined;
+      try {
+        const text = await response.text();
+        if (text) {
+          errorBody = text.length > 1024 ? text.slice(0, 1024) + '...[truncated]' : text;
+        }
+      } catch {
+        // ignore body read errors
+      }
+      const diagnostics = errorBody
+        ? `POST ${endpoint} -> HTTP ${response.status} ${response.statusText || ''}\n${errorBody}`
+        : `POST ${endpoint} -> HTTP ${response.status} ${response.statusText || ''}`;
       throw new KevClientException({
         code: 'HTTP_ERROR',
         title: `Error del servidor HTTP ${response.status}`,
         message: `El servicio en ${endpoint} respondió con el código de estado ${response.status} (${response.statusText || 'Error HTTP'}).`,
         httpStatus: response.status,
-        diagnostics: `POST ${endpoint} -> HTTP ${response.status}`,
+        diagnostics,
       });
     }
 
