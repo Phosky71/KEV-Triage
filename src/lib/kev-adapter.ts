@@ -61,18 +61,28 @@ function isSeverityLevel(value: unknown): value is SeverityLevel {
 
 /**
  * Localiza el nodo de respuesta de una pregunta específica tanto si el servidor Kev
- * devuelve `answers` / `questions` / `results` como un objeto indexado por ID
+ * devuelve `answers` / `questions` / `results` / `outputs` como un objeto indexado por ID
  * o como un array de objetos `{ id, ... }`.
+ * Prioridad de búsqueda: answers > questions > results > outputs > raíz.
+ * Si la misma pregunta aparece en dos contenedores distintos con resultados distintos → INVALID_SCHEMA.
  */
 function extractQuestionNode(
   root: Record<string, unknown>,
   questionId: string
 ): Record<string, unknown> {
+  const containerNames = ['answers', 'questions', 'results', 'outputs', 'root'] as const;
   const containers = [root.answers, root.questions, root.results, root.outputs, root];
 
-  for (const container of containers) {
-    if (isRecord(container) && isRecord(container[questionId])) {
-      return container[questionId] as Record<string, unknown>;
+  const matches: Array<{ index: number; node: Record<string, unknown> }> = [];
+
+  for (let i = 0; i < containers.length; i += 1) {
+    const container = containers[i];
+    if (isRecord(container)) {
+      const candidate = container[questionId];
+      if (isRecord(candidate)) {
+        matches.push({ index: i, node: candidate as Record<string, unknown> });
+        continue;
+      }
     }
     if (Array.isArray(container)) {
       const found = container.find(
@@ -80,15 +90,49 @@ function extractQuestionNode(
           isRecord(item) && item.id === questionId
       );
       if (found) {
-        return found;
+        matches.push({ index: i, node: found });
       }
     }
   }
 
-  throw new KevValidationError(
-    `La respuesta del modelo no contiene el resultado obligatorio para la pregunta "${questionId}".`,
-    `Claves presentes en la raíz: [${Object.keys(root).join(', ')}]`
-  );
+  if (matches.length === 0) {
+    throw new KevValidationError(
+      `La respuesta del modelo no contiene el resultado obligatorio para la pregunta "${questionId}".`,
+      `Claves presentes en la raíz: [${Object.keys(root).join(', ')}]`
+    );
+  }
+
+  if (matches.length >= 2) {
+    const m0 = matches[0];
+    if (!m0) {
+      throw new KevValidationError(
+        `La respuesta del modelo no contiene el resultado obligatorio para la pregunta "${questionId}".`,
+        `Claves presentes en la raíz: [${Object.keys(root).join(', ')}]`
+      );
+    }
+    const firstStr = JSON.stringify(m0.node);
+    const name0 = containerNames[m0.index];
+    for (let i = 1; i < matches.length; i += 1) {
+      const mi = matches[i];
+      if (!mi) continue;
+      if (JSON.stringify(mi.node) !== firstStr) {
+        const namei = containerNames[mi.index];
+        throw new KevValidationError(
+          'Esquema de respuesta inválido.',
+          `La pregunta "${questionId}" aparece en múltiples contenedores con resultados distintos (${name0} vs ${namei}).`
+        );
+      }
+    }
+  }
+
+  const res = matches[0];
+  if (!res) {
+    throw new KevValidationError(
+      `La respuesta del modelo no contiene el resultado obligatorio para la pregunta "${questionId}".`,
+      `Claves presentes en la raíz: [${Object.keys(root).join(', ')}]`
+    );
+  }
+  return res.node;
 }
 
 /**
@@ -524,23 +568,87 @@ function parseLatencyMetrics(
 ): LatencyMetrics {
   let modelDeclaredMs: number | null = null;
 
-  const rawLatency =
+  const rawLatencyMs =
     root.latency_ms ??
     root.latencyMs ??
     root.inference_time_ms ??
-    (isRecord(root.metadata) ? root.metadata.latency_ms : undefined) ??
-    (isRecord(root.timing) ? root.timing.latency_ms : undefined);
+    root.inferenceTimeMs ??
+    (isRecord(root.metadata) ? (root.metadata as Record<string, unknown>).latency_ms ?? (root.metadata as Record<string, unknown>).latencyMs ?? (root.metadata as Record<string, unknown>).inference_time_ms : undefined) ??
+    (isRecord(root.timing) ? (root.timing as Record<string, unknown>).latency_ms ?? (root.timing as Record<string, unknown>).latencyMs ?? (root.timing as Record<string, unknown>).inference_time_ms : undefined);
 
-  if (typeof rawLatency === 'number' && !Number.isNaN(rawLatency) && rawLatency >= 0) {
-    modelDeclaredMs = Math.round(rawLatency);
-  } else if (
-    typeof root.latency === 'number' &&
-    !Number.isNaN(root.latency) &&
-    root.latency >= 0
-  ) {
-    // Si viene en segundos (ej. 0.042) frente a milisegundos
-    modelDeclaredMs =
-      root.latency < 10 ? Math.round(root.latency * 1000) : Math.round(root.latency);
+  if (rawLatencyMs !== undefined && rawLatencyMs !== null) {
+    if (typeof rawLatencyMs === 'number' && !Number.isNaN(rawLatencyMs) && rawLatencyMs >= 0) {
+      modelDeclaredMs = Math.round(rawLatencyMs);
+    } else {
+      modelDeclaredMs = null;
+    }
+    return {
+      modelDeclaredMs,
+      clientRoundTripMs:
+        typeof clientRoundTripMs === 'number' && clientRoundTripMs >= 0
+          ? Math.round(clientRoundTripMs)
+          : null,
+    };
+  }
+
+  const rawLatencySec =
+    (root as Record<string, unknown>).latency_seconds ??
+    (root as Record<string, unknown>).inference_time_seconds ??
+    (root as Record<string, unknown>).latencySeconds ??
+    (root as Record<string, unknown>).inferenceTimeSeconds ??
+    (isRecord(root.metadata) ? ((root.metadata as Record<string, unknown>).latency_seconds ?? (root.metadata as Record<string, unknown>).inference_time_seconds ?? (root.metadata as Record<string, unknown>).latencySeconds) : undefined) ??
+    (isRecord(root.timing) ? ((root.timing as Record<string, unknown>).latency_seconds ?? (root.timing as Record<string, unknown>).inference_time_seconds ?? (root.timing as Record<string, unknown>).latencySeconds) : undefined);
+
+  if (rawLatencySec !== undefined && rawLatencySec !== null) {
+    if (typeof rawLatencySec === 'number' && !Number.isNaN(rawLatencySec) && rawLatencySec >= 0) {
+      modelDeclaredMs = Math.round(rawLatencySec * 1000);
+    } else {
+      modelDeclaredMs = null;
+    }
+    return {
+      modelDeclaredMs,
+      clientRoundTripMs:
+        typeof clientRoundTripMs === 'number' && clientRoundTripMs >= 0
+          ? Math.round(clientRoundTripMs)
+          : null,
+    };
+  }
+
+  const rawLatencyS =
+    (root as Record<string, unknown>).latency_s ??
+    (root as Record<string, unknown>).inference_time_s ??
+    (isRecord(root.metadata) ? ((root.metadata as Record<string, unknown>).latency_s ?? (root.metadata as Record<string, unknown>).inference_time_s) : undefined) ??
+    (isRecord(root.timing) ? ((root.timing as Record<string, unknown>).latency_s ?? (root.timing as Record<string, unknown>).inference_time_s) : undefined);
+
+  if (rawLatencyS !== undefined && rawLatencyS !== null) {
+    if (typeof rawLatencyS === 'number' && !Number.isNaN(rawLatencyS) && rawLatencyS >= 0) {
+      modelDeclaredMs = Math.round(rawLatencyS * 1000);
+    } else {
+      modelDeclaredMs = null;
+    }
+    return {
+      modelDeclaredMs,
+      clientRoundTripMs:
+        typeof clientRoundTripMs === 'number' && clientRoundTripMs >= 0
+          ? Math.round(clientRoundTripMs)
+          : null,
+    };
+  }
+
+  const rawLatency =
+    (root as Record<string, unknown>).latency ??
+    (root as Record<string, unknown>).inference_time ??
+    (root as Record<string, unknown>).duration;
+
+  if (rawLatency !== undefined && rawLatency !== null) {
+    modelDeclaredMs = null;
+    return {
+      modelDeclaredMs,
+      clientRoundTripMs:
+        typeof clientRoundTripMs === 'number' && clientRoundTripMs >= 0
+          ? Math.round(clientRoundTripMs)
+          : null,
+    };
   }
 
   return {
