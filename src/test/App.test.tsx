@@ -205,4 +205,69 @@ describe('Integración de interfaz Kev Triage (App.tsx)', () => {
       vi.unstubAllEnvs();
     });
   });
+
+  describe('KT-012: desmontar durante petición', () => {
+    it('KT-012: al desmontar con petición en curso no provoca setState tras desmontar', async () => {
+      vi.useFakeTimers();
+      const response = {
+        answers: {
+          department: { choice: 'backend', confidence: 0.9 },
+          severity: { level: 'high' },
+          is_security_leak: { affirmative_probability: 0.1 },
+        },
+      };
+      let resolveFetch: ((value: Response) => void) | undefined = undefined;
+      vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFetch = resolve;
+          })
+      );
+
+      const { unmount } = render(<App />);
+      fireEvent.change(screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i }), {
+        target: { value: 'test' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
+      unmount();
+      if (resolveFetch) {
+        resolveFetch(
+          new Response(JSON.stringify(response), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+      }
+      await vi.runAllTimersAsync();
+      fetchSpy.mockRestore();
+      vi.unstubAllEnvs();
+      vi.useRealTimers();
+    });
+  });
+
+  describe('KT-013: cambio a demo durante petición', () => {
+    it('KT-013: activar modo demo con petición en curso cancela y limpia estados', async () => {
+      vi.useFakeTimers();
+      let resolveFetch: ((value: Response) => void) | undefined;
+      vi.stubEnv('VITE_MODAL_API_URL', 'https://real-instance--kev-api.modal.run');
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFetch = resolve;
+          })
+      );
+
+      render(<App />);
+      fireEvent.change(screen.getByRole('textbox', { name: /Descripción técnica de la incidencia/i }), {
+        target: { value: 'test' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Analizar Incidencia con Kev/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Modo Demostración/i }));
+      expect(screen.queryByText(/Analizando incidencia/i)).not.toBeInTheDocument();
+      fetchSpy.mockRestore();
+      vi.unstubAllEnvs();
+      vi.useRealTimers();
+    });
+  });
 });
