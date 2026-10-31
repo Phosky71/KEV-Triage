@@ -81,6 +81,72 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
     expect(() => adaptKevResponse({ ...base, answers: { ...base.answers, is_security_leak: { answer: '', p_yes: 0.9 } } }, { clientRoundTripMs: 10 })).toThrowError(KevValidationError);
   });
 
+  describe('KT-014: contenedores y prioridad', () => {
+    it('KT-014: pregunta solo en un contenedor es válida por prioridad', () => {
+      const payload = {
+        questions: {
+          department: { choice: 'backend', confidence: 0.8 },
+        },
+        severity: { level: 'high' },
+        is_security_leak: { affirmative_probability: 0.1 },
+      };
+      const res = adaptKevResponse(payload, { clientRoundTripMs: null });
+      expect(res.department.selected).toBe('backend');
+    });
+
+    it('KT-014: misma pregunta en dos contenedores con el mismo valor es válida', () => {
+      const node = { choice: 'backend', confidence: 0.8 };
+      const payload = {
+        answers: { department: node },
+        questions: { department: JSON.parse(JSON.stringify(node)) },
+        severity: { level: 'high' },
+        is_security_leak: { affirmative_probability: 0.1 },
+      };
+      const res = adaptKevResponse(payload, { clientRoundTripMs: null });
+      expect(res.department.selected).toBe('backend');
+    });
+
+    it('KT-014: misma pregunta en dos contenedores con valores distintos → INVALID_SCHEMA', () => {
+      const payload = {
+        answers: { department: { choice: 'backend', confidence: 0.8 } },
+        questions: { department: { choice: 'frontend', confidence: 0.8 } },
+        severity: { level: 'high' },
+        is_security_leak: { affirmative_probability: 0.1 },
+      };
+      expect(() => adaptKevResponse(payload, { clientRoundTripMs: null })).toThrow(KevValidationError);
+      try {
+        adaptKevResponse(payload, { clientRoundTripMs: null });
+        throw new Error('should fail');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(KevValidationError);
+      }
+    });
+  });
+
+  describe('KT-015: latencia unidad explícita', () => {
+    const base = { answers: { department: { choice: 'backend', confidence: 0.9 }, severity: { level: 'high' }, is_security_leak: { affirmative_probability: 0.1 } } };
+
+    it('KT-015: latency_ms explícito (válido)', () => {
+      const res = adaptKevResponse({ ...base, latency_ms: 150 }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBe(150);
+    });
+
+    it('KT-015: latency_seconds explícito (convierte)', () => {
+      const res = adaptKevResponse({ ...base, latency_seconds: 0.5 }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBe(500);
+    });
+
+    it('KT-015: latency sin sufijo ambiguo → null', () => {
+      const res = adaptKevResponse({ ...base, latency: 0.5 }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBeNull();
+    });
+
+    it('KT-015: ausente → null', () => {
+      const res = adaptKevResponse(base, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBeNull();
+    });
+  });
+
   describe('KT-006: severidad', () => {
     const baseDept = { department: { choice: 'backend', confidence: 0.9 } };
     const baseSec = { is_security_leak: { affirmative_probability: 0.1 } };
