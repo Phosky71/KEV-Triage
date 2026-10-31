@@ -62,3 +62,12 @@ Ver `docs/decisions/` para ADRs.
 **Hallazgos:** 24 total (Crítica: 4 | Alta: 6 | Media: 8 | Baja: 4 | Info: 2)  
 **Reporte:** [docs/audit/AUDIT-REPORT.md](audit/AUDIT-REPORT.md)  
 **Estado build/tests:** Build FALLA (errores tipos Vite/env), Typecheck PASA, Tests FALLA (3 tests en App.test.tsx), 6 vulnerabilidades npm audit.
+
+### 2026-10-30 — Correcciones hallazgos audit (KT-001–KT-011, KT-006, KT-005)
+`opencode -s fix-audit-2026-10-29`
+
+**Resumen:** Corrección incremental de hallazgos Alta. KT-001–KT-004 resueltos; build reproducible. KT-006 implementado con validación estricta de severidad y mensaje propio. KT-005 implementado con empate ε=1e-9, tolerancia suma |sum-1| ≤ 0.02+1e-9, choice-vs-probs mismatch → INVALID_SCHEMA, confidence explícita + empate → INVALID_SCHEMA, `department === null` → `human_review` siempre con `targetDepartment: null` (sin destino por defecto). ADR-004 y ADR-005 aceptados. Alertas de seguridad ortogonales (evalúan aunque departamento ambiguo). Cobertura ramas `kev-adapter.ts` actual: 75.33%.
+
+**Commits:** `bb6bdd1`, `1f26971` (KT-006), `34d2dec` (KT-005, ADR-005), `29fac42`, `bb33261`.  
+**Estado:** `npm run build` OK, `npx tsc --noEmit` OK, `npm test` **103 passed** (5 files). Reproducibilidad verificada.  
+**Rama:** `fix/audit-2026-10-29` listo para merge a `main`.
