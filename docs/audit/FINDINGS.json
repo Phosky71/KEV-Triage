@@ -140,7 +140,9 @@
     "Evidencia": "Revisión de código",
     "Impacto": "Warnings React en casos raros",
     "CorreccionRecomendada": "Añadir cleanup/mounted flag",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "bfa4260"
   },
   {
     "ID": "KT-013",
@@ -151,7 +153,9 @@
     "Evidencia": "Revisión de código",
     "Impacto": "UX confusa",
     "CorreccionRecomendada": "Revisar lógica de estados",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "7c8e912"
   },
   {
     "ID": "KT-014",
@@ -184,7 +188,9 @@
     "Evidencia": "Revisión de código",
     "Impacto": "Diagnóstico pobre",
     "CorreccionRecomendada": "Intentar leer cuerpo con límite",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "corregido",
+    "commit": "f9a2b81"
   },
   {
     "ID": "KT-017",
