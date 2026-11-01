@@ -25,6 +25,19 @@ export function createProxyServer(config = {}) {
   const KEV_UPSTREAM_URL = (config.kevUpstreamUrl ?? process.env.KEV_UPSTREAM_URL ?? '')
     .trim()
     .replace(/\/+$/, '');
+  if (KEV_UPSTREAM_URL) {
+    try {
+      const parsed = new URL(KEV_UPSTREAM_URL);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('KEV_UPSTREAM_URL debe usar esquema http:// o https://');
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('http')) {
+        throw err;
+      }
+      throw new Error('KEV_UPSTREAM_URL debe usar esquema http:// o https://');
+    }
+  }
   const KEV_API_KEY = (config.kevApiKey ?? process.env.KEV_API_KEY ?? '').trim();
   const ALLOWED_ORIGIN = config.allowedOrigin ?? process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173';
   const allowedOrigins = normalizeAllowedOrigins(ALLOWED_ORIGIN);
