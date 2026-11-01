@@ -201,7 +201,9 @@
     "Evidencia": "Revisión de código",
     "Impacto": "Proxy puede quedar colgado",
     "CorreccionRecomendada": "Llamar req.destroy() o drenar stream",
-    "Esfuerzo": "M"
+    "Esfuerzo": "M",
+    "estado": "no reproducible",
+    "commit": "f19979e"
   },
   {
     "ID": "KT-019",
@@ -248,7 +250,8 @@
     "Evidencia": "Archivo existe",
     "Impacto": "Verificación pendiente",
     "CorreccionRecomendada": "Revisar contenido",
-    "Esfuerzo": "S"
+    "Esfuerzo": "S",
+    "estado": "ya cubierto"
   },
   {
     "ID": "KT-024",
@@ -283,6 +286,7 @@
     "Impacto": "Configuración potencialmente incorrecta",
     "CorreccionRecomendada": "Validar esquema al arrancar o documentar restricciones",
     "Esfuerzo": "S",
-    "estado": "pendiente"
+    "estado": "corregido",
+    "commit": "f19979e"
   }
 ]
