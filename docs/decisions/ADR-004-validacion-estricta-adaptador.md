@@ -118,11 +118,20 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
 | Severidad contradictoria (múltiples campos) | `index: 0` + `score: 3` | `INVALID_SCHEMA` (sin prioridad) |
 | Severidad contradictoria | `level: high`, `index: 0` | `INVALID_SCHEMA` (sin prioridad) |
 
+## Decisión: `probability` en `noul` (is_security_leak)
+
+**Opción A: confianza derivada de `answer`** — Aceptada.
+
+- **Fecha:** 2026-11-01
+- **Comportamiento:** Cuando no existe una fuente explícita de P(sí) (`affirmative_probability`, `yes_probability`, `p_yes`, etc.), pero sí existen `probability`/`confidence` genéricos junto a `answer`, el adaptador interpreta ese valor como **confianza en la respuesta**: si `answer` es afirmativo (`true`/`yes`/`true`) → `P(sí)=p`; si `answer` es negativo (`false`/`no`/`false`) → `P(sí)=1-p`. Este comportamiento ya está implementado y testeado.
+- **Rationale:** Evita acoplar el parser a un campo opcional y de semántica incierto. Los tests existentes ya cubren este comportamiento, lo que garantiza compatibilidad sin introducir ambigüedad.
+- **Consecuencias:** Si `noul` cambia de esquema o expone una probabilidad explícita en el futuro, se abre una nueva decisión. No se modifica el comportamiento actual.
+
 ## Consecuencias
 
 - Empate de department ya **no** bloquea la alerta de seguridad (alineado con ADR-002).
 - Requiere cambios en `src/types.ts` (nullable/flag) y `src/components/AnalysisResults.tsx`. **Pendiente de implementación**.
-- Mantener invariante de seguridad requiere parseo por pregunta (cambio estructural) - **pendiente**.
+- Mantener invariante de seguridad requiere parseo por pregunta (cambio estructural) - **implementado en KT-025**.
 - Requiere tests adicionales para empates, suma fuera de tolerancia, contradicciones y casos límite.
 - Compatible con ADR-001 y ADR-002 (umbrales >0.70/>0.85 se aplican cuando hay probabilidad afirmativa válida).
 - No modifica `src/lib/triage-rules.ts`.
