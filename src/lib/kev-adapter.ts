@@ -8,6 +8,21 @@ import type {
   SeverityLevel,
 } from '../types';
 
+export type ParseOk<T> = { ok: true; value: T };
+export type ParseErr = { ok: false; error: KevValidationError };
+export type ParseResult<T> = ParseOk<T> | ParseErr;
+
+export interface KevPartialParseResult {
+  model: string;
+  isDemo: boolean;
+  demoFixtureName?: string;
+  latency: LatencyMetrics;
+  metadata: KevNormalizedResult['metadata'];
+  department: ParseResult<DepartmentClassification>;
+  severity: ParseResult<SeverityAssessment>;
+  securityLeak: ParseResult<SecurityLeakAssessment>;
+}
+
 const VALID_DEPARTMENTS: readonly DepartmentOption[] = [
   'frontend',
   'backend',
@@ -538,6 +553,45 @@ function parseSecurityLeakNode(node: Record<string, unknown>): SecurityLeakAsses
  * Extrae la latencia declarada por el modelo si viene informada en la respuesta,
  * manteniéndola diferenciada del RTT medido por el cliente.
  */
+function parseDepartmentNodePartial(
+  node: Record<string, unknown>
+): ParseResult<DepartmentClassification> {
+  try {
+    return { ok: true, value: parseDepartmentNode(node) };
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      return { ok: false, error };
+    }
+    throw error;
+  }
+}
+
+function parseSeverityNodePartial(
+  node: Record<string, unknown>
+): ParseResult<SeverityAssessment> {
+  try {
+    return { ok: true, value: parseSeverityNode(node) };
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      return { ok: false, error };
+    }
+    throw error;
+  }
+}
+
+function parseSecurityLeakNodePartial(
+  node: Record<string, unknown>
+): ParseResult<SecurityLeakAssessment> {
+  try {
+    return { ok: true, value: parseSecurityLeakNode(node) };
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      return { ok: false, error };
+    }
+    throw error;
+  }
+}
+
 function parseLatencyMetrics(
   root: Record<string, unknown>,
   clientRoundTripMs: number | null
@@ -637,7 +691,89 @@ function parseLatencyMetrics(
 }
 
 /**
+ * Parseo parcial por pregunta. Nunca lanza excepciones de validación por pregunta.
+ * Única excepción: si rawPayload no es un objeto válido → lanza KevValidationError.
+ */
+export function adaptKevResponsePartial(
+  rawPayload: unknown,
+  options: {
+    clientRoundTripMs: number | null;
+    isDemo?: boolean;
+    demoFixtureName?: string;
+    fallbackModelName?: string;
+  }
+): KevPartialParseResult {
+  if (!isRecord(rawPayload)) {
+    throw new KevValidationError(
+      'La respuesta del servidor no es un objeto JSON válido.',
+      `Tipo recibido: ${typeof rawPayload}`
+    );
+  }
+
+  let deptNode: Record<string, unknown>;
+  let sevNode: Record<string, unknown>;
+  let secNode: Record<string, unknown>;
+  try {
+    deptNode = extractQuestionNode(rawPayload, 'department');
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      deptNode = {} as Record<string, unknown>;
+    } else {
+      throw error;
+    }
+  }
+  try {
+    sevNode = extractQuestionNode(rawPayload, 'severity');
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      sevNode = {} as Record<string, unknown>;
+    } else {
+      throw error;
+    }
+  }
+  try {
+    secNode = extractQuestionNode(rawPayload, 'is_security_leak');
+  } catch (error) {
+    if (error instanceof KevValidationError) {
+      secNode = {} as Record<string, unknown>;
+    } else {
+      throw error;
+    }
+  }
+
+  const department = parseDepartmentNodePartial(deptNode);
+  const severity = parseSeverityNodePartial(sevNode);
+  const securityLeak = parseSecurityLeakNodePartial(secNode);
+  const latency = parseLatencyMetrics(rawPayload, options.clientRoundTripMs);
+
+  const model =
+    typeof rawPayload.model === 'string' && rawPayload.model.trim().length > 0
+      ? rawPayload.model.trim()
+      : options.fallbackModelName ?? 'kev-systemone';
+
+  const metadata: KevNormalizedResult['metadata'] = {};
+  if (typeof rawPayload.id === 'string') {
+    metadata.requestId = rawPayload.id;
+  }
+  if (isRecord(rawPayload.usage) && typeof rawPayload.usage.total_tokens === 'number') {
+    metadata.usageTokens = rawPayload.usage.total_tokens;
+  }
+
+  return {
+    model,
+    isDemo: Boolean(options.isDemo),
+    demoFixtureName: options.demoFixtureName,
+    department,
+    severity,
+    securityLeak,
+    latency,
+    metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+  };
+}
+
+/**
  * Transforma y valida un payload crudo de `/v1/systemone` en `KevNormalizedResult`.
+ * Conserva su contrato exacto: lanza si CUALQUIER pregunta falla.
  */
 export function adaptKevResponse(
   rawPayload: unknown,
