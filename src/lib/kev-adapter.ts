@@ -102,29 +102,6 @@ function extractQuestionNode(
     );
   }
 
-  if (matches.length >= 2) {
-    const m0 = matches[0];
-    if (!m0) {
-      throw new KevValidationError(
-        `La respuesta del modelo no contiene el resultado obligatorio para la pregunta "${questionId}".`,
-        `Claves presentes en la raíz: [${Object.keys(root).join(', ')}]`
-      );
-    }
-    const firstStr = JSON.stringify(m0.node);
-    const name0 = containerNames[m0.index];
-    for (let i = 1; i < matches.length; i += 1) {
-      const mi = matches[i];
-      if (!mi) continue;
-      if (JSON.stringify(mi.node) !== firstStr) {
-        const namei = containerNames[mi.index];
-        throw new KevValidationError(
-          'Esquema de respuesta inválido.',
-          `La pregunta "${questionId}" aparece en múltiples contenedores con resultados distintos (${name0} vs ${namei}).`
-        );
-      }
-    }
-  }
-
   const res = matches[0];
   if (!res) {
     throw new KevValidationError(

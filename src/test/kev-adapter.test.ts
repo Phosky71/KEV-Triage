@@ -106,20 +106,37 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
       expect(res.department.selected).toBe('backend');
     });
 
-    it('KT-014: misma pregunta en dos contenedores con valores distintos → INVALID_SCHEMA', () => {
+    it('KT-014: misma pregunta en dos contenedores con valores distintos → prioridad answers gana', () => {
       const payload = {
         answers: { department: { choice: 'backend', confidence: 0.8 } },
         questions: { department: { choice: 'frontend', confidence: 0.8 } },
         severity: { level: 'high' },
         is_security_leak: { affirmative_probability: 0.1 },
       };
-      expect(() => adaptKevResponse(payload, { clientRoundTripMs: null })).toThrow(KevValidationError);
-      try {
-        adaptKevResponse(payload, { clientRoundTripMs: null });
-        throw new Error('should fail');
-      } catch (e: any) {
-        expect(e).toBeInstanceOf(KevValidationError);
-      }
+      const res = adaptKevResponse(payload, { clientRoundTripMs: null });
+      expect(res.department.selected).toBe('backend');
+    });
+
+    it('KT-014: pregunta en answers y questions con valores distintos → gana answers', () => {
+      const payload = {
+        answers: { department: { choice: 'backend', confidence: 0.9 } },
+        questions: { department: { choice: 'frontend', confidence: 0.9 } },
+        severity: { level: 'high' },
+        is_security_leak: { affirmative_probability: 0.1 },
+      };
+      const res = adaptKevResponse(payload, { clientRoundTripMs: null });
+      expect(res.department.selected).toBe('backend');
+    });
+
+    it('KT-014: pregunta en results y outputs → gana results', () => {
+      const payload = {
+        results: { department: { choice: 'devops', confidence: 0.8 } },
+        outputs: { department: { choice: 'frontend', confidence: 0.8 } },
+        severity: { level: 'high' },
+        is_security_leak: { affirmative_probability: 0.1 },
+      };
+      const res = adaptKevResponse(payload, { clientRoundTripMs: null });
+      expect(res.department.selected).toBe('devops');
     });
   });
 
@@ -144,6 +161,21 @@ describe('Cliente y Adaptador del protocolo Kev (/v1/systemone)', () => {
     it('KT-015: ausente → null', () => {
       const res = adaptKevResponse(base, { clientRoundTripMs: 10 });
       expect(res.latency.modelDeclaredMs).toBeNull();
+    });
+
+    it('KT-015: latency_ms con valor no numérico → null', () => {
+      const res = adaptKevResponse({ ...base, latency_ms: '150' as any }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBeNull();
+    });
+
+    it('KT-015: latency_ms en metadata → válido', () => {
+      const res = adaptKevResponse({ ...base, metadata: { latency_ms: 200 } }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBe(200);
+    });
+
+    it('KT-015: latency_ms en timing → válido', () => {
+      const res = adaptKevResponse({ ...base, timing: { latency_ms: 250 } }, { clientRoundTripMs: 10 });
+      expect(res.latency.modelDeclaredMs).toBe(250);
     });
   });
 
