@@ -71,3 +71,12 @@ Ver `docs/decisions/` para ADRs.
 **Commits:** `bb6bdd1`, `1f26971` (KT-006), `34d2dec` (KT-005, ADR-005), `29fac42`, `bb33261`.  
 **Estado:** `npm run build` OK, `npx tsc --noEmit` OK, `npm test` **103 passed** (5 files). Reproducibilidad verificada.  
 **Rama:** `fix/audit-2026-10-29` listo para merge a `main`.
+
+### 2026-11-01 — Cierre KT-025 y documentación final
+`opencode -s close-kt025-2026-11-01`
+
+**Resumen:** KT-025 cerrado con parseo por pregunta e invariante de seguridad garantizada por diseño. `adaptKevResponse` mantiene contrato exacto (lanza si CUALQUIER pregunta falla). `adaptKevResponsePartial` nunca lanza por fallo de pregunta salvo payload no objeto. Ruta parcial solo vía `App.tsx`. `src/lib/triage-rules.ts` sin cambios. Alerta de seguridad evaluada siempre que sea válida; fallo de `is_security_leak` muestra bloque destacado con mensaje fijo KT-007. `rawPayload` nunca renderizado. KT-017 marcado no reproducible, KT-023 ya cubierto, KT-026 corregido con validación http/https al arrancar.
+
+**Commits:** `4ba0e64` fix(KT-025): parseo por pregunta e invariante de seguridad; `002a87a` test(KT-025): tests parciales y regresión adaptKevResponse.  
+**Tests:** **128 passed** (8 files). `npx tsc --noEmit` OK, `npm run build` OK. Cobertura ramas `kev-adapter.ts`: 74.56%.  
+**Docs:** ADR-004 actualizado (invariante garantizado por diseño), FINDINGS.json KT-025 corregido.

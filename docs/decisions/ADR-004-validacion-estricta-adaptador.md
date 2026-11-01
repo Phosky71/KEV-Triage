@@ -23,7 +23,7 @@ El adaptador (`src/lib/kev-adapter.ts`) debe mantener la semántica determinista
 **Si `is_security_leak` es válida, su alerta se evalúa y se muestra aunque otra pregunta falle o sea ambigua.**
 
 - Razón: ADR-002 exige que la alerta de seguridad nunca se oculte.
-- Comprobación en estado actual: El adaptador construye `KevNormalizedResult` completo; un fallo en parsing de `department` puede impedir construir el resultado completo. Esto **requiere cambio estructural** en el adaptador para evaluar preguntas por separado (parsear `securityLeak` independientemente) y devolver alerta aunque `department`/`severity` sean ambiguos o inválidos. **Decisión pendiente**: no implementar en KT-005; documentar y tratar en fase posterior.
+- Implementado (KT-025): El adaptador ahora parsea las preguntas por separado mediante `adaptKevResponsePartial` y parsers individuales. `adaptKevResponse` mantiene su contrato exacto (lanza si CUALQUIER pregunta falla). La ruta parcial solo se usa vía `App.tsx`. El invariante queda garantizado por diseño al poder evaluar `securityLeak` de forma independiente.
 
 ## Cláusula: Origen de P(sí) para `is_security_leak`
 

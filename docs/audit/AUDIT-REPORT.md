@@ -7,14 +7,15 @@
 
 ## 1. Resumen Ejecutivo (máx. 10 líneas)
 
-- **Estado general:** Proyecto funcional con arquitectura en capas bien definida, pero con fallos críticos de build/test que impiden validación completa.
-- **Hallazgos totales:** 24 (Crítica: 4 | Alta: 6 | Media: 8 | Baja: 4 | Info: 2)
-- **Build:** **FALLA** - Errores TypeScript en `kev-client.ts` (acceso a `import.meta.env` sin tipos) y `vite.config.ts` (incompatibilidad de tipos entre Vite/Vitest).
+- **Estado general:** Proyecto funcional con arquitectura en capas bien definida. Hallazgos críticos corregidos.
+- **Hallazgos totales:** 26 (Crítica: 4 | Alta: 7 | Media: 8 | Baja: 3 | Info: 4)
+- **Estado tras correcciones:** KT-001–KT-004, KT-006–KT-007, KT-012–KT-016, KT-017 (no reproducible), KT-023 (ya cubierto), KT-025 (corregido), KT-026 (corregido).
+- **Build:** **OK** - `npm run build` verde.
 - **Typecheck:** **PASA** - `npx tsc --noEmit` sin errores.
-- **Tests:** **FALLA** - 3 tests fallidos en `App.test.tsx` (18 tests totales: 15 pasados, 3 fallidos). 2 suites pasadas, 1 fallida.
-- **npm audit:** **6 vulnerabilidades** (2 críticas, 1 alta, 3 moderadas) - todas en cadena de dependencias de Vitest/Vite/esbuild/tinypool.
-- **Git:** **NO ES REPOSITORIO GIT** - No se puede verificar historial.
-- **Principal riesgo:** Inconsistencia entre `tsc` standalone y `tsc -b` (project references) + configuración Vite/Vitest incompatible.
+- **Tests:** **OK** - **128 passed** (8 files).
+- **npm audit:** **6 vulnerabilidades** (2 críticas, 1 alta, 3 moderadas) - solo devDependencies.
+- **Git:** **REPOSITORIO GIT** - rama `main` en `002a87a`.
+- **Principal cierre:** KT-025 resuelto con parseo por pregunta e invariante de seguridad garantizada por diseño (ADR-004).
 
 ## 2. Resultado de build, tests, typecheck y npm audit
 

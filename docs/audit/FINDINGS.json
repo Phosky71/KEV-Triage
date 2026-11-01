@@ -274,7 +274,8 @@
     "Impacto": "Alerta de seguridad podría ocultarse en caso de fallo de otras preguntas",
     "CorreccionRecomendada": "Refactorizar adaptador para parseo independiente por pregunta",
     "Esfuerzo": "M",
-    "estado": "pendiente"
+    "estado": "corregido",
+    "commit": "4ba0e64,002a87a"
   },
   {
     "ID": "KT-026",
