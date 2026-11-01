@@ -70,7 +70,6 @@ function extractQuestionNode(
   root: Record<string, unknown>,
   questionId: string
 ): Record<string, unknown> {
-  const containerNames = ['answers', 'questions', 'results', 'outputs', 'root'] as const;
   const containers = [root.answers, root.questions, root.results, root.outputs, root];
 
   const matches: Array<{ index: number; node: Record<string, unknown> }> = [];
