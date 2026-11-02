@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+// @ts-ignore
 import { gatewayResponseToKevShape, kevPayloadToGateway } from '../../server/freellm-translate.mjs';
 import { adaptKevResponse, adaptKevResponsePartial, KevValidationError } from '../lib/kev-adapter';
 import { buildSystemOnePayload } from '../lib/kev-client';
@@ -82,10 +83,10 @@ describe('FreeLLM translate (FREELLM-001)', () => {
 describe('FreeLLM proxy escenarios (FREELLM-001)', () => {
   it('UPSTREAM_TYPE conmuta upstream (kev vs freellm)', async () => {
     const { createProxyServer } = await import('../../server/proxy.mjs');
-    const serverKev = createProxyServer({ upstreamType: 'kev', kevUpstreamUrl: 'http://example.com', port: 0 });
+    const serverKev = createProxyServer({ upstreamType: 'kev', kevUpstreamUrl: 'http://example.com', port: 0 } as any);
     expect(serverKev).toBeDefined();
     serverKev.close();
-    const serverFree = createProxyServer({ upstreamType: 'freellm', freellmBaseUrl: 'http://example.com', freellmApiKey: 'x', freellmModel: 'auto', port: 0 });
+    const serverFree = createProxyServer({ upstreamType: 'freellm', freellmBaseUrl: 'http://example.com', freellmApiKey: 'x', freellmModel: 'auto', port: 0 } as any);
     expect(serverFree).toBeDefined();
     serverFree.close();
   });
@@ -121,7 +122,8 @@ describe('FreeLLM proxy escenarios (FREELLM-001)', () => {
 
 describe('FreeLLM translate cobertura (FREELLM-001)', () => {
   it('gatewayResponseToKevShape: gw no es objeto -> retorna tal como está', async () => {
-    const { gatewayResponseToKevShape } = await import('../../server/freellm-translate.mjs');
+    const mod: any = await import('../../server/freellm-translate.mjs');
+    const gatewayResponseToKevShape = mod.gatewayResponseToKevShape;
     expect(gatewayResponseToKevShape(null)).toBe(null);
     expect(gatewayResponseToKevShape('string')).toBe('string');
     expect(gatewayResponseToKevShape(123)).toBe(123);
@@ -129,25 +131,25 @@ describe('FreeLLM translate cobertura (FREELLM-001)', () => {
 
   it('gatewayResponseToKevShape: sin usage -> no añade total_tokens', async () => {
     const { gatewayResponseToKevShape } = await import('../../server/freellm-translate.mjs');
-    const res = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {} });
+    const res: any = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {} });
     expect(res.usage).toBeUndefined();
   });
 
   it('gatewayResponseToKevShape: usage sin total_tokens lo calcula', async () => {
     const { gatewayResponseToKevShape } = await import('../../server/freellm-translate.mjs');
-    const res = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, usage: { input_tokens: 10, output_tokens: 5 } });
+    const res: any = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, usage: { input_tokens: 10, output_tokens: 5 } });
     expect(res.usage.total_tokens).toBe(15);
   });
 
   it('gatewayResponseToKevShape: provider se añade a metadata si existe', async () => {
     const { gatewayResponseToKevShape } = await import('../../server/freellm-translate.mjs');
-    const res = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, provider: 'cloudflare' });
+    const res: any = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, provider: 'cloudflare' });
     expect(res.metadata?.provider).toBe('cloudflare');
   });
 
   it('gatewayResponseToKevShape: provider se añade a metadata existente', async () => {
     const { gatewayResponseToKevShape } = await import('../../server/freellm-translate.mjs');
-    const res = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, provider: 'cloudflare', metadata: { foo: 1 } });
+    const res: any = gatewayResponseToKevShape({ object: 'decision', model: 'x', answers: {}, provider: 'cloudflare', metadata: { foo: 1 } });
     expect(res.metadata.provider).toBe('cloudflare');
     expect(res.metadata.foo).toBe(1);
   });
@@ -169,7 +171,7 @@ describe('FreeLLM translate cobertura (FREELLM-001)', () => {
   it('kevPayloadToGateway: is_security_leak con criteria string -> genera yes/no', async () => {
     const { kevPayloadToGateway } = await import('../../server/freellm-translate.mjs');
     const p = buildSystemOnePayload('test');
-    const t = kevPayloadToGateway(p, { model: 'auto' });
+    const t: any = kevPayloadToGateway(p, { model: 'auto' });
     expect(t.questions.is_security_leak.criteria.yes).toBeTypeOf('string');
     expect(t.questions.is_security_leak.criteria.no).toBeTypeOf('string');
   });
@@ -180,7 +182,7 @@ describe('FreeLLM translate cobertura (FREELLM-001)', () => {
       { id: 'q1', type: 'choice', question: 'q1?', options: ['a','b'], criteria: 'desc' },
       { id: 'q2', type: 'score', question: 'q2?', levels: ['low','high'], criteria: 'desc2' },
     ]};
-    const t = kevPayloadToGateway(payload, { model: 'm1' });
+    const t: any = kevPayloadToGateway(payload, { model: 'm1' });
     expect(t.questions.q1.criteria.a).toBeDefined();
     expect(t.questions.q2.criteria.low).toBeDefined();
   });
