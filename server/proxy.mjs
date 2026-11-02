@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { kevPayloadToGateway, gatewayResponseToKevShape } from './freellm-translate.mjs';
 
 const DEFAULT_PORT = 8787;
 const DEFAULT_MAX_BODY_BYTES = 32 * 1024; // 32 KB máximo para evitar abuso
@@ -22,6 +23,11 @@ function isOriginAllowed(origin, allowedOrigins) {
 
 export function createProxyServer(config = {}) {
   const PORT = Number(config.port ?? process.env.PORT ?? DEFAULT_PORT);
+  const UPSTREAM_TYPE = (config.upstreamType ?? process.env.UPSTREAM_TYPE ?? 'kev')
+    .toString()
+    .trim()
+    .toLowerCase();
+
   const KEV_UPSTREAM_URL = (config.kevUpstreamUrl ?? process.env.KEV_UPSTREAM_URL ?? '')
     .trim()
     .replace(/\/+$/, '');
@@ -38,6 +44,27 @@ export function createProxyServer(config = {}) {
       throw new Error('KEV_UPSTREAM_URL debe usar esquema http:// o https://');
     }
   }
+
+  const FREELLM_BASE_URL = (config.freellmBaseUrl ?? process.env.FREELLM_BASE_URL ?? '')
+    .trim()
+    .replace(/\/+$/, '');
+  if (FREELLM_BASE_URL) {
+    try {
+      const parsed = new URL(FREELLM_BASE_URL);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('FREELLM_BASE_URL debe usar esquema http:// o https://');
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('http')) {
+        throw err;
+      }
+      throw new Error('FREELLM_BASE_URL debe usar esquema http:// o https://');
+    }
+  }
+
+  const FREELLM_API_KEY = (config.freellmApiKey ?? process.env.FREELLM_API_KEY ?? '').trim();
+  const FREELLM_MODEL = (config.freellmModel ?? process.env.FREELLM_MODEL ?? 'auto').trim() || 'auto';
+
   const KEV_API_KEY = (config.kevApiKey ?? process.env.KEV_API_KEY ?? '').trim();
   const ALLOWED_ORIGIN = config.allowedOrigin ?? process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173';
   const allowedOrigins = normalizeAllowedOrigins(ALLOWED_ORIGIN);
@@ -106,16 +133,6 @@ export function createProxyServer(config = {}) {
       return;
     }
 
-    if (!KEV_UPSTREAM_URL) {
-      res.writeHead(503, { 'Content-Type': 'application/json' });
-      res.end(
-        JSON.stringify({
-          error: 'KEV_UPSTREAM_URL no está configurada en el entorno del servidor proxy.',
-        })
-      );
-      return;
-    }
-
     let body = '';
     let receivedBytes = 0;
 
@@ -139,17 +156,56 @@ export function createProxyServer(config = {}) {
       return;
     }
 
-    const upstreamEndpoint = KEV_UPSTREAM_URL.endsWith('/v1/systemone')
-      ? KEV_UPSTREAM_URL
-      : `${KEV_UPSTREAM_URL}/v1/systemone`;
-
-    const headers = {
+    let upstreamEndpoint;
+    let headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
+    let requestBody = body;
 
-    if (KEV_API_KEY) {
-      headers.Authorization = `Bearer ${KEV_API_KEY}`;
+    if (UPSTREAM_TYPE === 'freellm') {
+      if (!FREELLM_BASE_URL) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'FREELLM_BASE_URL no está configurada en el entorno del servidor proxy.' }));
+        return;
+      }
+      if (!FREELLM_API_KEY) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'FREELLM_API_KEY no está configurada en el entorno del servidor proxy.' }));
+        return;
+      }
+      // Config inválida en contexto freellm -> modo demo manejado por cliente, pero aquí validamos
+      upstreamEndpoint = FREELLM_BASE_URL.endsWith('/v1/decisions')
+        ? FREELLM_BASE_URL
+        : FREELLM_BASE_URL.endsWith('/v1')
+          ? `${FREELLM_BASE_URL}/decisions`
+          : `${FREELLM_BASE_URL}/v1/decisions`;
+      headers.Authorization = `Bearer ${FREELLM_API_KEY}`;
+      try {
+        const parsed = JSON.parse(body);
+        const translated = kevPayloadToGateway(parsed, { model: FREELLM_MODEL });
+        requestBody = JSON.stringify(translated);
+      } catch {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Solicitud inválida.' }));
+        return;
+      }
+    } else {
+      if (!KEV_UPSTREAM_URL) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            error: 'KEV_UPSTREAM_URL no está configurada en el entorno del servidor proxy.',
+          })
+        );
+        return;
+      }
+      upstreamEndpoint = KEV_UPSTREAM_URL.endsWith('/v1/systemone')
+        ? KEV_UPSTREAM_URL
+        : `${KEV_UPSTREAM_URL}/v1/systemone`;
+      if (KEV_API_KEY) {
+        headers.Authorization = `Bearer ${KEV_API_KEY}`;
+      }
     }
 
     const controller = new AbortController();
@@ -173,7 +229,7 @@ export function createProxyServer(config = {}) {
       const upstreamResponse = await fetch(upstreamEndpoint, {
         method: 'POST',
         headers,
-        body,
+        body: requestBody,
         signal: controller.signal,
       });
 
@@ -190,6 +246,21 @@ export function createProxyServer(config = {}) {
         res.setHeader('Vary', 'Origin');
       }
       if (res.writableEnded) return;
+
+      if (UPSTREAM_TYPE === 'freellm' && upstreamResponse.ok) {
+        try {
+          const parsedGw = JSON.parse(responseText);
+          const translated = gatewayResponseToKevShape(parsedGw);
+          res.writeHead(upstreamResponse.status, {
+            'Content-Type': 'application/json; charset=utf-8',
+          });
+          res.end(JSON.stringify(translated));
+          return;
+        } catch {
+          // Si no se puede parsear/transformar, pasar tal cual? pero payload no objeto debe lanzar KevValidationError - dejar pasar
+        }
+      }
+
       res.writeHead(upstreamResponse.status, {
         'Content-Type': 'application/json; charset=utf-8',
       });

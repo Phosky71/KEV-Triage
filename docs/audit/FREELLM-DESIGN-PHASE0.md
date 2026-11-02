@@ -11,16 +11,18 @@ Base: docs/audit/FREELLM-MIGRATION.md, docs/project-state.md
 - No hay esquema completo documentado en repo.
 - Se debe verificar qué endpoints expone el gateway real con clave válida (`/v1/models`).
 
-### Opción elegida (propuesta, sujeto a confirmación tras curl con clave)
-**Opción A: Usar `/v1/chat/completions` (compatible OpenAI)** si el gateway expone ese endpoint y permite forzar salida JSON estructurada con system/user prompts.  
-**Opción B: Usar `/v1/decisions`** si es el contrato nativo del gateway.
+### Opción elegida (propuesta, sujeto a confirmación)
+**Opción B: Usar `/v1/decisions` — VERIFICADO y aprobado.** Es el plano nativo de decisiones y está separado del chat.  
 
-**Criterios de elección:**
-- Si `/v1/models` existe y lista modelos bajo `/v1/chat/completions` estándar OpenAI → preferir **A** (más predecible, fácil de traducir con system prompt forzando JSON).
-- Si el gateway documenta/expone únicamente `/v1/decisions` con esquema propio → usar **B** pero requerirá `adaptFreeLLMResponse` nuevo con validación estricta.
-- En ambos casos, la traducción ocurre **únicamente en el servidor** (proxy) y la respuesta se re-empaqueta a la **misma forma** que Kev (`answers`/contenedores + campos esperados por `kev-adapter.ts`).
+**Estado tras verificación (2026-11-02):**
+- `/v1/models` confirmado en formato OpenAI estándar (`object: 'list', data[]` con `id`, `name`, `available`, `execution_status`, `supported_parameters`, `context_window`) — ~85 modelos. **Sin campo que distinga modelos de decisión vs chat.**
+- **POST `http://127.0.0.1:31415/v1/decisions` VERIFICADO:**
+  - Petición: `{"state": "<texto>", "model": "<FREELLM_MODEL o 'auto'>", "questions": {"<id>": {"type": "choice", "instructions": "<enunciado>", "criteria": {"<opcion>": "<descripción>", ...}}}}`
+  - Respuesta: `{"object": "decision", "model": "<modelo real>", "provider": "<proveedor>", "answers": {"<id>": {"type": "choice", "choice": "<opcion>", "probabilities": {"<opcion>": <p>, ...}, "confidence": <p>}}, "usage": {"input_tokens": <n>, "output_tokens": <n>}}`
+- **Hechos verificados:** Una sola llamada con las 3 preguntas (sin fan-out). `answers[id]+choice+probabilities+confidence` directamente parseable por `kev-adapter`. `is_security_leak` con criteria yes/no funciona (p_yes 0.9664 > 0.70 activó alerta). Router eligió `@cf/cloudflare/clef-flash`. Respuestas repetidas idénticas (posible caché/determinismo). Confianzas reales moderadas (0.33–0.87).
+- **Decisión:** Usar **B** (`/v1/decisions`). Traducción ocurre **únicamente en el servidor** (proxy). `adaptKevResponse`/`adaptKevResponsePartial` **no se modifican** NI `triage-rules.ts`.
 
-**Nota:** La app NO debe cambiar; `kev-client.ts` seguirá llamando al endpoint configurado. `adaptKevResponse`/`adaptKevResponsePartial` **no se modifican** salvo justificación explícita y aprobada.
+**Nota:** La app NO debe cambiar; `kev-client.ts` seguirá llamando al endpoint configurado.
 
 ## 2) Arquitectura propuesta (al estilo KT-025)
 
@@ -43,16 +45,30 @@ Base: docs/audit/FREELLM-MIGRATION.md, docs/project-state.md
 - `src/lib/kev-adapter.ts`: **sin modificaciones** salvo justificación aprobada.
 
 ### Descubrimiento de modelos (NUEVO)
-- **Ruta servidor:** `GET /api/kev/models` (únicamente cuando `UPSTREAM_TYPE=freellm`; en `kev` puede devolver 404 o lista vacía según despliegue).
-- **Comportamiento:** consulta `/v1/models` del gateway con `FREELLM_API_KEY` (solo servidor), devuelve **lista COMPLETA de IDs** sin secretos ni URLs con credenciales. Caché con TTL corto opcional (documentado si se añade).
-- **Cliente:** carga lista al inicializar/activar modo real con FreeLLM, popula selector con **todos** los modelos sin filtrado.
+- **Ruta servidor:** `GET /api/kev/models` (únicamente cuando `UPSTREAM_TYPE=freellm`; en `kev` puede devolver 404 o lista vacía según despliegue) — **APLAZADO a FREELLM-002**.
+- **Comportamiento:** consulta `/v1/models` del gateway con `FREELLM_API_KEY` (solo servidor). **Formato confirmado:** OpenAI estándar `object: 'list', data[]` con `id`, `name`, `available`, `execution_status`, `supported_parameters`, `context_window` (~85 modelos). **Sin campo que distinga modelos de decisión vs chat.**
+- **Filtrado:** No se puede filtrar aún. **APLAZADO**.
+- **Modelos virtuales/router:** `auto`, `fusion`, `claude-opus-4-5`, `claude-sonnet-4-5`, `claude-haiku-4-5` (router/slots). Pendiente decisión en FREELLM-002.
+- **SELECTOR EN UI:** **APLAZADO a FREELLM-002.** No se implementa selector. El modelo se configura por **`FREELLM_MODEL`** en el proxy (default **`'auto'`**). Documentado en ADR-005.
 
-### Firma de funciones propuestas
+### Firma de funciones propuestas (ESPECIFICACIÓN VERIFICADA)
 ```typescript
 // server/freellm-translate.mjs
-export function kevPayloadToGateway(input: unknown, opts: { model: string, systemPrompt?: string }): unknown
-export function gatewayResponseToKevShape(gw: unknown, meta: { model?: string }): unknown  // devuelve forma compatible con kev-adapter
-export function gatewayModelsToList(gw: unknown): string[]  // parseo puro de lista de modelos del gateway
+// questions ARRAY de Kev → objeto indexado por id; question → instructions
+// descartar options (las claves de criteria SON las opciones)
+// department: choice con criteria actual
+// severity: choice con criteria indexado por los 5 niveles
+// is_security_leak: choice con criteria construido como { yes: "<derivar del criteria string de Kev>", no: "..." }
+// añade model: opts.model (FREELLM_MODEL, default 'auto')
+export function kevPayloadToGateway(payload: unknown, opts: { model: string }): unknown
+
+// passthrough de answers/model; usage.total_tokens = input_tokens + output_tokens (kev-adapter lo lee)
+// conservar provider en metadata si el adapter lo tolera, sin romper su contrato
+// si gw no es objeto → dejar que el flujo actual lance KevValidationError
+export function gatewayResponseToKevShape(gw: unknown, meta: { model?: string }): unknown
+
+// APLAZADO a FREELLM-002 - no implementar selector
+export function gatewayModelsToList(gw: unknown): string[]  // parseo puro; selector aplazado
 ```
 
 ### Tipos (conceptuales)
@@ -79,42 +95,55 @@ interface ProxyConfig {
 
 ### Flujo
 1. Cliente envía payload Kev a `POST /api/kev/v1/systemone` (ruta actual) vía proxy o directo.
-2. Proxy detecta `UPSTREAM_TYPE=freellm`: traduce payload Kev → gateway request con system prompt forzando JSON con claves `department`, `severity`, `is_security_leak` (estructura que `kev-adapter` entienda). Añade auth con `FREELLM_API_KEY`.
-3. Gateway responde (puede ser malformado). Proxy traduce respuesta → forma Kev (`answers`/contenedores o estructura esperada).
-4. Cliente recibe respuesta en forma Kev → `adaptKevResponsePartial`/flujo actual procesa con KT-025.
-5. UI (modo real + freellm) permite seleccionar **cualquier modelo** de la lista devuelta por `GET /api/kev/models`; modelo seleccionado viaja como `modelName` en payload.
+2. Proxy detecta `UPSTREAM_TYPE=freellm`: toma `FREELLM_MODEL` (default `'auto'`) del servidor, traduce payload Kev (array questions → objeto indexado por id, question→instructions, criteria por opciones) a petición para `POST /v1/decisions` con **UNA SOLA LLAMADA** con las 3 preguntas. Añade auth con `FREELLM_API_KEY`.
+3. Gateway responde con `{object:'decision', answers:{...}, usage:{input_tokens,output_tokens}, model, provider}`. Proxy traduce a forma Kev compatible con `kev-adapter`: passthrough de `answers/model`, `usage.total_tokens = input_tokens + output_tokens`, conserva `provider` en metadata si es tolerado. **Sin fan-out.**
+4. Cliente recibe respuesta en forma Kev → `adaptKevResponse`/`adaptKevResponsePartial` como hoy procesan con KT-025.
+5. **Sin selector en UI** (aplazado a FREELLM-002). Modelo se configura vía `FREELLM_MODEL`.
 
 ### Aviso visible
-Cuando modo real use FreeLLM, mostrar aviso informativo en UI (sin exponer clave/endpoint) indicando uso de proveedor gratuito con posible entrenamiento de datos. **No bloquea ni filtra modelos.** 
+Cuando modo real use FreeLLM, mostrar aviso informativo en UI (sin exponer clave/endpoint) indicando uso de proveedor gratuito con posible entrenamiento de datos. **No bloquea ni filtra modelos** (filtrado se aplicará solo cuando se identifiquen los modelos de decisión). 
 
 ### ADR-005 (privacidad) — decisión explícita
-Se documentará en ADR-005 la decisión explícita del usuario de **exponer todos los modelos** disponibles en el gateway, aceptando el riesgo de entrenamiento de datos en proveedores gratuitos. El aviso visible se mantiene pero no actúa como filtro.
+Se documentará en ADR-005 la decisión explícita del usuario de exponer modelos (inicialmente conforme a lo que se identifique como **modelos de decisión** de `/v1/decisions`), aceptando el riesgo de entrenamiento de datos en proveedores gratuitos. El aviso visible se mantiene pero no actúa como filtro.
 
-## 3) Tests entrada→salida esperados (Fase 1)
-- Payload válido gateway → `adaptKevResponse` OK con model correcto.
-- Respuesta malformada (JSON alucinado) → `adaptKevResponsePartial` con parciales; `adaptKevResponse` lanza; UI renderiza parciales.
-- 401/403 gateway → error global, sin crasheo.
-- Timeout/abort → cancelación limpia.
-- Ninguna var `VITE_*` ni código cliente contiene clave/endpoint con credenciales.
-- Proxy: tests traducción ambos sentidos (Kev→gateway, gateway→forma Kev).
-- Ruta de modelos del proxy devuelve todos los IDs del gateway (mock de `/v1/models`).
-- El selector renderiza todos los modelos recibidos, sin filtrado.
-- El modelo seleccionado por el usuario llega en la petición al gateway (assert en traducción `kevPayloadToGateway`).
-- Modelo inexistente o retirado (gateway responde error de modelo) → error global mapeado, sin crasheo.
-- Ninguna respuesta del proxy al cliente contiene la clave ni endpoint con credenciales.
-**Hoy:** ejecutar para confirmar qué fallan (ninguno relacionado con FreeLLM debe fallar aún). 
+## Fan-out por pregunta
+**NO hay fan-out.** Contrato verificado: `/v1/decisions` acepta **UNA SOLA LLAMADA** con las 3 preguntas y devuelve las respuestas juntas. **Sin 3 llamadas.**
+
+## Esquema real pendiente
+Solo queda por resolver:
+- **Formato de lista de modelos:** confirmar si hay forma de distinguir modelos de decisión vs chat (o si todos los devueltos por `/v1/models` son aplicables). Hoy: **sin distinción** en `/v1/models`.
+- **Cómo se distinguen los de decisión:** pendiente (dashboard/config o pruebas).
+- **Modelos virtuales/router:** decisión final sobre excluir `auto`, `fusion`, `claude-opus-4-5`, `claude-sonnet-4-5`, `claude-haiku-4-5` (aplazado a FREELLM-002).
+
+## Conectividad WSL
+Si se ejecuta en WSL, verificar conectividad al gateway (puede necesitar IP del host Windows, no `127.0.0.1`). Exportar `FREELLM_API_KEY` en el entorno de WSL. No loggear ni commitear la clave. `.env` fuera del repo.
+
+## 3) Tests entrada→salida esperados (Fase 1) — con fixtures reales verificados
+- **kevPayloadToGateway:** array→mapa, `question`→`instructions`, options plegadas en `criteria`, severity con 5 niveles, `is_security_leak` con yes/no (derivar textos exactos de criteria Kev), añade `model: opts.model` (FREELLM_MODEL/default 'auto').
+- **gatewayResponseToKevShape + adaptKevResponse** sobre respuesta real verificada: `department='backend'`, `severity='high'`, `is_security_leak` afirmativa 0.9664 → regla 1 dispara alerta (>0.70). `usage.total_tokens = input_tokens + output_tokens` mapeado. `model`/`provider` preservados.
+- **Respuesta malformada** (campo alucinado) → `adaptKevResponsePartial` con parciales; `adaptKevResponse` lanza; UI renderiza parciales (KT-025).
+- **401/403/429/5xx** del gateway → error global mapeado, sin crasheo.
+- **Timeout/abort** → cancelación limpia.
+- **UPSTREAM_TYPE** conmuta upstream; sin `VITE_FREELLM_*` ni secretos en cliente (grep).
+- **Config inválida** → modo demo.
+- **Sin fan-out:** UNA sola llamada al gateway por análisis (assert).
+- **Sin selector:** verificar que no hay selector implementado (aplazado a FREELLM-002).
+**Hoy:** ejecutar para confirmar qué fallan (la funcionalidad FreeLLM no existe aún).
 
 ## 4) Verificación Fase 2
-- `tsc --noEmit`, `build`, todos tests existentes (131 hoy; solo adiciones).
-- Cobertura ramas `kev-client.ts` y módulo proxy antes/después.
+- `tsc --noEmit`, `build`, todos tests existentes (131 hoy; **SIN MODIFICAR**, solo adiciones).
+- Cobertura ramas `kev-client.ts`, `server/proxy.mjs` y `server/freellm-translate.mjs` antes/después con números.
 - Sanity checks con restauración:
-  - (a) simula un gateway que devuelve N modelos y verifica que el selector muestra los N;
-  - (b) rompe la traducción de un campo y verifica que el parcial KT-025 se renderiza. Restaura y pega ambos resultados.
+  - (a) rompe el mapeo de `usage.total_tokens` → el test de metadata falla;
+  - (b) invierte las claves `yes/no` en la traducción de `is_security_leak` → el test de alerta de seguridad falla (invariante);
+  - (c) rompe un campo de la traducción → parcial KT-025 renderizado (no error global). Restaurar y pegar los tres resultados.
 
 ## 5) Cierre Fase 3
-- ADR-005 (integración y privacidad), actualizar FREELLM-MIGRATION.md (implementado/superado), actualizar project-state.md (ya no "investigación").
-- Commits atómicos `feat(FREELLM-001): ...`, `test(FREELLM-001): ...`
+- ADR-005 (integración, privacidad: datos van a proveedores del gateway y el usuario lo acepta; aviso visible informativo en modo real; confianzas moderadas 0.33–0.87 documentadas; selector aplazado a FREELLM-002 con experimentos anotados: parámetro model con valor inválido y con modelo del plano de chat).
+- FREELLM-MIGRATION.md → **implementado**.
+- project-state.md actualizado.
+- Commits atómicos `docs(FREELLM-001): ...`, `feat(FREELLM-001): ...`, `test(FREELLM-001): ...`
 - Push a origin/main
-- Tabla final con commits/tests/cobertura/whitelist final
+- Tabla final: commits, tests totales (131 existentes + nuevos), cobertura antes/después, lista de modelos que expone el gateway.
 
-**Acción requerida:** Aprueba diseño y whitelist propuesta, o indica cambios. No se implementa hasta aprobación. Para confirmar endpoint real: tras aprobación ejecutar `curl -H "Authorization: Bearer $FREELLM_API_KEY" http://127.0.0.1:31415/v1/models` y compartir resultado.
+**Reglas duras:** nunca loggear ni commitear `FREELLM_API_KEY`; `.env` fuera del repo (verificado en `.gitignore`); mensajes de error del proxy sin detalles del upstream. Sin reintentos salvo documentados y aprobados.
