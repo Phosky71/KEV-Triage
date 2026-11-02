@@ -1,9 +1,10 @@
 # Propuesta de Migración a FreeLLM API (`/v1/decisions`)
 
 **Fecha:** 2026-10-29  
-**Estado:** SOLO PROPUESTA - NO IMPLEMENTADA  
-**Endpoint objetivo:** `POST http://127.0.0.1:31415/v1/decisions`  
-**Base URL:** `http://127.0.0.1:31415/v1`
+**Estado:** IMPLEMENTADO (FREELLM-001)  
+**Endpoint objetivo:** `POST http://127.0.0.1:31415/v1/decisions` (verificado 2026-11-02)  
+**Base URL:** `http://127.0.0.1:31415/v1`  
+**Integración:** Traducción solo en servidor vía proxy (`UPSTREAM_TYPE=freellm`), una sola llamada con 3 preguntas, sin fan-out. Selector aplazado a FREELLM-002.
 
 ## 1. Investigación del Contrato
 

@@ -6,7 +6,7 @@
 - **Descripción:** Aplicación fullstack de clasificación técnica y triaje determinista de incidencias impulsada por el protocolo System 1 de Kev (`POST /v1/systemone`).
 - **Versión:** 1.0.0
 - **Tipo:** Aplicación web SPA (React + TypeScript + Vite) con proxy Node.js para comunicación segura con el servicio upstream de Kev.
-- **Estado actual:** Implementación funcional con reglas deterministas, validación estricta de esquema y modo demostración.
+- **Estado actual:** Implementación funcional con reglas deterministas, validación estricta de esquema y modo demostración. Integración FreeLLM `/v1/decisions` implementada (FREELLM-001), traducción solo en servidor, sin cambios en cliente/adaptador.
 
 ## Propósito
 
